@@ -1,0 +1,120 @@
+/* line 3, ../../sass/index.scss */
+header {
+  position: relative;
+}
+/* line 6, ../../sass/index.scss */
+header figure {
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+/* line 11, ../../sass/index.scss */
+header figure h1 {
+  position: absolute;
+  top: 25%;
+  left: 20%;
+  font-size: 5em;
+  font-family: "Russo One", sans-serif;
+}
+/* line 20, ../../sass/index.scss */
+header figure h1 .shift {
+  position: relative;
+  top: -30px;
+  left: 30px;
+  text-shadow: -30px 30px 15px #626262;
+}
+/* line 28, ../../sass/index.scss */
+header figure figcaption {
+  position: absolute;
+  bottom: 5px;
+  left: 10px;
+  font-style: italic;
+  font-size: 0.8em;
+}
+/* line 37, ../../sass/index.scss */
+header figure figcaption a {
+  color: #727054;
+}
+/* line 40, ../../sass/index.scss */
+header figure figcaption a:hover {
+  color: #302f23;
+}
+/* line 46, ../../sass/index.scss */
+header figure .btn {
+  padding: 0;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #dcdcdc;
+  border: 0 solid white;
+}
+/* line 54, ../../sass/index.scss */
+header figure .btn a {
+  padding: 0.5rem;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+/* line 60, ../../sass/index.scss */
+header figure .btn a i {
+  vertical-align: middle;
+  color: #000;
+}
+
+/* line 69, ../../sass/index.scss */
+#tricks {
+  height: 1000px;
+}
+/* line 72, ../../sass/index.scss */
+#tricks h2 {
+  text-align: center;
+  font-family: "Russo One", sans-serif;
+  font-size: 3em;
+  margin: 25px 0;
+}
+/* line 81, ../../sass/index.scss */
+#tricks .card {
+  border-width: 0;
+  border-radius: 20px;
+  margin: 15px 0;
+}
+/* line 88, ../../sass/index.scss */
+#tricks .card .card-block {
+  border-radius: 20px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+}
+/* line 92, ../../sass/index.scss */
+#tricks .card .card-block:hover {
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+/* line 98, ../../sass/index.scss */
+#tricks .card a {
+  color: #727054;
+}
+/* line 101, ../../sass/index.scss */
+#tricks .card a:hover {
+  color: #302f23;
+  text-decoration: none;
+}
+/* line 107, ../../sass/index.scss */
+#tricks .card .card-img-top {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+/* line 114, ../../sass/index.scss */
+#tricks .card .card-footer {
+  position: relative;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+/* line 121, ../../sass/index.scss */
+#tricks .card .card-footer .modifs {
+  position: absolute;
+  right: 10px;
+}
+/* line 125, ../../sass/index.scss */
+#tricks .card .card-footer .modifs i {
+  position: relative;
+  margin: 0 5px;
+  top: -50%;
+}

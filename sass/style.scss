@@ -1,0 +1,46 @@
+@import "_variables";
+
+body {
+  margin-top: 56px;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+p, li, a {
+  font-family: $paragraphFont;
+}
+
+h1 {
+  font-family: $titleFont;
+}
+
+/* Menu */
+
+nav {
+  ul {
+    li {
+      border-right: 1px solid black;
+
+      .nav-link {
+        padding: 0;
+        height: 100%;
+        font: {
+          family: $paragraphFont;
+          size: 1.1em;
+        }
+
+        .material-icons {
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+}
+
+@media all and (min-width: 768px){
+  .navbar-expand-md .navbar-collapse {
+    justify-content: flex-end;
+  }
+}

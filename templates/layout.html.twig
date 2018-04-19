@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}SnowTricks{% endblock %}</title>
+
+    <meta name="viewport" content="width=device-width" />
+
+    <!--Boostrap 4-->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous"/>
+
+    <!--GoogleFont-->
+    <link href="https://fonts.googleapis.com/css?family=Raleway|Russo+One" rel="stylesheet">
+    <!--GoogleIcons-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/style.css"/>
+
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+
+<div class="container-fluid">
+
+    <nav class="navbar navbar-expand-md fixed-top navbar-light bg-light">
+        <a class="navbar-brand" href="/accueil">Snow<span class="bold">Tricks</span></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link a_scrollspy" href="/accueil#top"><span class="material-icons">home</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link a_scrollspy" href="/accueil#tricks">Tricks</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    {% block body %}{% endblock %}
+</div>
+
+<!--JQuery-->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+
+<!--Bootstrap JS-->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
+        integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+        crossorigin="anonymous"></script>
+
+{% block javascripts %}{% endblock %}
+</body>
+</html>
