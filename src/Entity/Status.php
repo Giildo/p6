@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Table(name="p6_status")
+ * @ORM\Entity(repositoryClass="App\Repository\StatusRepository")
+ */
+class Status
+{
+    public const ADMIN = 1;
+    public const CONTRIB = 2;
+    public const USER = 3;
+
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=30)
+     * @var string
+     */
+    private $name;
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+}

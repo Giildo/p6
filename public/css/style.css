@@ -1,0 +1,43 @@
+/* line 3, ../../sass/style.scss */
+body {
+  margin-top: 56px;
+}
+
+/* line 7, ../../sass/style.scss */
+.bold {
+  font-weight: bold;
+}
+
+/* line 11, ../../sass/style.scss */
+p, li, a {
+  font-family: "Raleway", sans-serif;
+}
+
+/* line 15, ../../sass/style.scss */
+h1 {
+  font-family: "Russo One", sans-serif;
+}
+
+/* Menu */
+/* line 23, ../../sass/style.scss */
+nav ul li {
+  border-right: 1px solid black;
+}
+/* line 26, ../../sass/style.scss */
+nav ul li .nav-link {
+  padding: 0;
+  height: 100%;
+  font-family: "Raleway", sans-serif;
+  font-size: 1.1em;
+}
+/* line 34, ../../sass/style.scss */
+nav ul li .nav-link .material-icons {
+  vertical-align: middle;
+}
+
+@media all and (min-width: 768px) {
+  /* line 43, ../../sass/style.scss */
+  .navbar-expand-md .navbar-collapse {
+    justify-content: flex-end;
+  }
+}
