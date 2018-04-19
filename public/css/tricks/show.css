@@ -1,0 +1,109 @@
+/* line 3, ../../../sass/tricks/show.scss */
+body {
+  background-color: #e6e6e6;
+}
+/* line 6, ../../../sass/tricks/show.scss */
+body #trick {
+  background-color: #fff;
+  border-radius: 0 0 15px 15px;
+}
+/* line 11, ../../../sass/tricks/show.scss */
+body #trick header figure {
+  position: relative;
+}
+/* line 13, ../../../sass/tricks/show.scss */
+body #trick header figure h1 {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  font-family: "Russo One", sans-serif;
+}
+/* line 23, ../../../sass/tricks/show.scss */
+body #trick #description p {
+  text-indent: 30px;
+}
+/* line 28, ../../../sass/tricks/show.scss */
+body #trick #infos {
+  text-align: center;
+  font-size: 1.1em;
+  margin-bottom: 15px;
+}
+/* line 36, ../../../sass/tricks/show.scss */
+body #comments #comments_block {
+  background: white;
+  margin-top: 50px;
+  border-radius: 15px 15px 0 0;
+}
+/* line 42, ../../../sass/tricks/show.scss */
+body #comments #comments_block form label {
+  font-family: "Raleway", sans-serif;
+}
+/* line 47, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  margin: 20px 0;
+}
+/* line 52, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment .avatar_containing {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+/* line 57, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment .avatar_containing .row {
+  padding: 15px 0;
+}
+/* line 60, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment .avatar_containing .row img {
+  border-radius: 50%;
+  border: 1px solid black;
+}
+/* line 68, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment .bubble_containing .row {
+  margin: 15px 0 15px 15px;
+}
+/* line 71, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment .bubble_containing .row .bubble {
+  position: relative;
+  background: #dddddd;
+  border-radius: 10px;
+  padding: 15px;
+}
+/* line 77, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment .bubble_containing .row .bubble::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: calc(50% - 10px);
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-right: 25px solid #dddddd;
+  border-bottom: 10px solid transparent;
+}
+/* line 91, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment .bubble_containing .row .bubble h3 {
+  font-size: 1rem;
+}
+/* line 94, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment .bubble_containing .row .bubble h3 span {
+  font-size: 1.05rem;
+  font-weight: bold;
+}
+
+/* line 107, ../../../sass/tricks/show.scss */
+h2 {
+  text-align: center;
+  padding: 20px 0;
+  font-family: "Russo One", sans-serif;
+}
+/* line 112, ../../../sass/tricks/show.scss */
+h2::after {
+  content: '';
+  width: 90%;
+  height: 1px;
+  display: block;
+  margin: 10px auto;
+  background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.3), transparent);
+}

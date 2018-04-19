@@ -1,0 +1,120 @@
+@import "_variables";
+
+body {
+  background-color: #e6e6e6;
+
+  #trick {
+    background-color: #fff;
+    border-radius: 0 0 $borderRadiusShow $borderRadiusShow;
+
+    header {
+      figure {
+        position: relative;
+        h1 {
+          position: absolute;
+          top: 50px;
+          left: 50px;
+          font-family: $titleFont;
+        }
+      }
+    }
+
+    #description {
+      p {
+        text-indent: 30px;
+      }
+    }
+
+    #infos {
+      text-align: center;
+      font-size: 1.1em;
+      margin-bottom: 15px;
+    }
+  }
+
+  #comments {
+    #comments_block {
+      background: white;
+      margin-top: 50px;
+      border-radius: $borderRadiusShow $borderRadiusShow 0 0;
+
+      form {
+        label {
+          font-family: $paragraphFont;
+        }
+      }
+
+      .comment {
+        border: 1px solid rgba(0,0,0,0.2);
+        border-radius: 5px;
+        margin: 20px 0;
+
+        .avatar_containing {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          .row {
+            padding: 15px 0;
+
+            img {
+              border-radius: 50%;
+              border: 1px solid black
+            }
+          }
+        }
+
+        .bubble_containing {
+          .row {
+            margin: 15px 0 15px 15px;
+
+            .bubble {
+              position: relative;
+              background: $colorBubble;
+              border-radius: 10px;
+              padding: 15px;
+
+              &::before {
+                content: '';
+                position: absolute;
+                right: 100%;
+                top: calc(50% - 10px);
+                width: 0;
+                height: 0;
+                border: {
+                  top: 10px solid transparent;
+                  right: 25px solid $colorBubble;
+                  bottom: 10px solid transparent;
+                }
+              }
+
+              h3 {
+                font-size: 1rem;
+
+                span {
+                  font-size: 1.05rem;
+                  font-weight: bold;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+h2 {
+  text-align: center;
+  padding: 20px 0;
+  font-family: $titleFont;
+
+  &::after {
+    content: '';
+    width: 90%;
+    height: 1px;
+    display: block;
+    margin: 10px auto;
+    background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.3), rgba(0,0,0,0));
+  }
+}

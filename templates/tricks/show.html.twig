@@ -1,0 +1,110 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ trick.name }}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/css/tricks/show.css" />
+{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="offset-sm-2 col-sm-8" id="trick">
+            <header class="row">
+                <figure>
+                    <img src="/img/header.jpg" alt="Image d'un snowboarder" class="img-fluid" />
+                    <h1>{{ trick.category.name | capitalize }} - {{ trick.name }}</h1>
+                </figure>
+            </header>
+
+            <section id="description">
+                <div class="row" id="medias">
+                    <h2 class="col-sm-12">Médias</h2>
+                    <iframe src="https://www.youtube.com/embed/CA5bURVJ5zk" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                </div>
+                <div class="row" id="description">
+                    <h2 class="col-sm-12">Description</h2>
+                    <p class="col-sm-12">{{ trick.description }}</p>
+                </div>
+                <div class="row" id="infos">
+                    <h2 class="col-sm-12">Infos</h2>
+                    {% if date(trick.createdAt) != date(trick.updatedAt) %}
+                        <div class="col-sm-3">
+                            <span class="badge badge-pill badge-info">Auteur</span>
+                            {{ trick.user.pseudo }}
+                        </div>
+
+                        <div class="col-sm-3">
+                            <span class="badge badge-pill badge-info">Catégorie</span>
+                            {{ trick.category.name | capitalize }}
+                        </div>
+
+                        <div class="col-sm-3">
+                            <span class="badge badge-pill badge-info">Crée le</span>
+                            {{ trick.createdAt | date('d/m/Y H:m:s') }}
+                        </div>
+
+                        <div class="col-sm-3">
+                            <span class="badge badge-pill badge-info">Modifié le</span>
+                            {{ trick.updatedAt | date('d/m/Y H:m:s') }}
+                        </div>
+                    {% else %}
+                        <div class="col-sm-4">
+                            <span class="badge badge-pill badge-info">Auteur</span>
+                            {{ trick.user.pseudo }}
+                        </div>
+
+                        <div class="col-sm-4">
+                            <span class="badge badge-pill badge-info">Catégorie</span>
+                            {{ trick.category.name | capitalize }}
+                        </div>
+
+                        <div class="col-sm-4">
+                            <span class="badge badge-pill badge-info">Crée le</span>
+                            {{ trick.createdAt | date('d/m/Y H:m:s') }}
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <section class="row" id="comments">
+        <div class="offset-sm-2 col-sm-8" id="comments_block">
+            <div class="row">
+                <h2 class="col-sm-12">Espace de discussion</h2>
+            </div>
+
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <input type="submit" value="Valider" class="btn btn-success" />
+            {{ form_end(form) }}
+
+            {% if comments is defined %}
+                {% for comment in comments %}
+                    <div class="col-sm-12 comment">
+                        <div class="row">
+                            <div class="col-sm-1 avatar_containing">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <img src="/img/users/avatar.jpg" alt="Logo" class="img-fluid" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-11 bubble_containing">
+                                <div class="row">
+                                    <div class="col-sm-12 bubble">
+                                        <h3><span>Commentaire de {{ comment.user.pseudo }}</span>, posté le {{ comment.updatedAt | date('d-m-Y H:m') }}</h3>
+                                        <br />
+                                        <p>{{ comment.comment }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </section>
+
+{% endblock %}
