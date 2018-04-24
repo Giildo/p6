@@ -38,6 +38,16 @@
                 <li class="nav-item">
                     <a class="nav-link a_scrollspy" href="/accueil#tricks">Tricks</a>
                 </li>
+
+                {% if isConnected == false %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/connexion">Connexion</a>
+                    </li>
+                {% elseif isConnected == true %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/deconnexion">Déconnexion</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </nav>

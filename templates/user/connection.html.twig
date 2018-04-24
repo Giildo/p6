@@ -1,0 +1,22 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ parent() }} - Connexion{% endblock %}
+
+{% block body %}
+    <h1>Se connecter</h1>
+
+    <div class="row">
+        <div class="col-sm-6">
+            {{ form_start(formConnection) }}
+            {{ form_widget(formConnection) }}
+            <button type="submit" class="btn btn-success">Valider</button>
+            {{ form_end(formConnection) }}
+        </div>
+        <div class="col-sm-6">
+            {{ form_start(formRegistry) }}
+            {{ form_widget(formRegistry) }}
+            <button type="submit" class="btn btn-success">Envoyer</button>
+            {{ form_end(formRegistry) }}
+        </div>
+    </div>
+{% endblock %}
