@@ -169,9 +169,21 @@ class UserController extends AppController
 
     /**
      * @Route("/admin/utilisateurs", name="admin_users")
+     * @return Response|RedirectResponse
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
     public function adminUsers()
     {
+        if ($this->isAdmin()) {
+            $users = $this->doctrine->getRepository(User::class)
+                ->findAll();
+
+            return $this->render('/admin/users.html.twig', compact('users'));
+        } else {
+            return new RedirectResponse('/error/401', RedirectResponse::HTTP_UNAUTHORIZED);
+        }
     }
 
     /**
