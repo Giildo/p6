@@ -44,11 +44,11 @@ class TricksController extends AppController
                 ->getRepository(Comment::class)
                 ->findBy(['trick' => $trick], ['updatedAt' => 'desc']);
 
-            return new Response($this->render('tricks/show.html.twig', [
+            return $this->render('tricks/show.html.twig', [
                 'trick'    => $trick,
                 'comments' => $comments,
                 'form'     => $form->createView()
-            ]));
+            ]);
         } else {
             return new RedirectResponse('/accueil', RedirectResponse::HTTP_FOUND);
         }

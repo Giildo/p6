@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
 
-abstract class AppController
+abstract class AppController extends Controller
 {
     /**
      * @var Environment
@@ -52,19 +54,19 @@ abstract class AppController
     }
 
     /**
-     * @param string $path
-     * @param array|null $values
-     * @return string
+     * @param string $view
+     * @param array $parameters
+     * @param Response|null $response
+     * @return Response
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    protected function render(string $path, ?array $values = [])
+    protected function render(string $view, array $parameters = array(), Response $response = null): Response
     {
-        $values['isAdmin'] = $this->isAdmin();
-        $values['isConnected'] = $this->isConnected();
+        $parameters['isAdmin'] = $this->isAdmin();
+        $parameters['isConnected'] = $this->isConnected();
 
-        return $this->twig->render($path, $values);
+        return new Response($this->twig->render($view, $parameters));
     }
-
 }

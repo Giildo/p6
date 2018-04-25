@@ -1,0 +1,15 @@
+button {
+  position: absolute;
+  right: 15px;
+}
+
+form {
+  margin: 20px 0;
+
+  .alert {
+    display: block;
+    .d-block {
+      display: inline-block;
+    }
+  }
+}

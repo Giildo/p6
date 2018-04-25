@@ -28,7 +28,7 @@ class GeneralController extends AppController
         $tricks = $doctrine->getRepository(Trick::class)
             ->findAll();
 
-        return new Response($this->render('general/index.html.twig', compact('tricks')));
+        return $this->render('general/index.html.twig', compact('tricks'));
     }
 
     /**
