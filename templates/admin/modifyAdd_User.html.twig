@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block body %}
-    <h1>{{ user.pseudo }}</h1>
+    <h1>{{ user.pseudo | default('Ajouter un nouvel utilisateur')}}</h1>
 
     <div class="row">
         <div class="offset-sm-2 col-sm-8">

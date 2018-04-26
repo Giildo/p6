@@ -11,6 +11,12 @@
 
     <div class="row">
         <div class="offset-sm-1 col-sm-10">
+            <a href="/admin/utilisateur/ajouter" class="btn btn-success">Nouvel utilisateur</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="offset-sm-1 col-sm-10">
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -40,11 +46,11 @@
                         </td>
                         <td>{{ user.status.name }}</td>
                         <td>
-                            <form action="/admin/modifierUtilisateur/{{ user.pseudo | lower }}">
+                            <form method="post" action="/admin/utilisateur/modifier/{{ user.pseudo | lower }}">
                                 <input type="hidden" value="{{ tokens[user.pseudo] }}" name="token" />
                                 <button type="submit" class="btn btn-info">Modifier</button>
                             </form>
-                            <form action="/admin/supprimerUtilisateur/{{ user.pseudo | lower }}">
+                            <form method="post" action="/admin/utilisateur/supprimer/{{ user.pseudo | lower }}">
                                 <input type="hidden" value="{{ tokens[user.pseudo] }}" name="token" />
                                 <button type="submit" class="btn btn-warning">Supprimer</button>
                             </form>

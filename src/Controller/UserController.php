@@ -200,12 +200,55 @@ class UserController extends AppController
     }
 
     /**
+     * Vérifie que l'utilisateur qui accède à la page est administrateur.
+     * Crée un nouvel utilisateur vierge, l'attache à un nouveau formulaire @uses UserType.
+     * Vérifie si le formulaire est soumis et valide. Si c'est le cas, ajoute par défaut comme mot de passe le pseudo,
+     * et met par défaut l'email en non validé.
+     * Ajoute le nouvel utilisateur crée en BDD. Si tout est OK redirige vers la page d'admin.
+     *
+     * @Route("/admin/utilisateur/ajouter", name="admin_add")
+     * @param Request $request
+     * @return RedirectResponse|Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function add(Request $request)
+    {
+        if ($this->isAdmin()) {
+            $user = new User();
+
+            $form = $this->createForm(UserType::class, $user);
+            $form->remove('password')
+                ->remove('mailValidate');
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $password = hash('sha512', $user->getPseudo());
+                $user->setPassword($password)
+                    ->setMailValidate(false);
+                $manager = $this->doctrine->getManager();
+                $manager->persist($user);
+                $manager->flush();
+                return new RedirectResponse('/admin/utilisateurs');
+            }
+
+            return $this->render('/admin/modifyAdd_User.html.twig', [
+                'form' => $form->createView()
+            ]);
+        } else {
+            return new RedirectResponse('/erreur/401');
+        }
+    }
+
+    /**
      * Vérifie que l'utilisateur qui essaye d'accéder à la page est administrateur.
-     * Récupère l'utilisateur à modifier. Crée un formulaire @uses UserType.
+     * Récupère l'utilisateur à modifier, s'il n'existe pas redirige la page. Crée un formulaire @uses UserType.
      * Attache le formulaire à la requête, vérifie s'il a été soumis et s'il est valide.
      * Si c'est le cas, récupère le manager pour sauvegarder l'utilisateur modifié en BDD.
      *
-     * @Route("/admin/modifierUtilisateur/{pseudo}", name="admin_modify", requirements={"pseudo"="\w+"})
+     * @Route("/admin/utilisateur/modifier/{pseudo}", name="admin_modify", requirements={"pseudo"="\w+"})
      * @param Request $request
      * @param string $pseudo
      * @return RedirectResponse|Response
@@ -220,13 +263,17 @@ class UserController extends AppController
             $user = $this->doctrine->getRepository(User::class)
                 ->findOneBy(['pseudo' => $pseudo]);
 
+            if (is_null($user)) {
+                return new RedirectResponse('/admin/utilisateurs');
+            }
+
             $date = new DateTime();
             $token = hash(
                 'sha512',
                 $user->getPseudo() . $date->format('m') . $user->getLastName() . $date->format('d')
             );
 
-            if ($request->query->get('token') !== $token) {
+            if ($request->request->get('token') !== $token) {
                 return new RedirectResponse('/admin/utilisateurs');
             }
 
@@ -243,10 +290,52 @@ class UserController extends AppController
                 $manager->flush();
             }
 
-            return $this->render('/admin/modifyUser.html.twig', [
+            return $this->render('/admin/modifyAdd_User.html.twig', [
                 'user' => $user,
                 'form' => $form->createView()
             ]);
+        } else {
+            return new RedirectResponse('/erreur/401');
+        }
+    }
+
+    /**
+     * Vérifie que l'utilisateur qui accède à la page est bien administrateur.
+     * Récupère l'utilisateur dans la base de donnée avec son pseudo, s'il n'existe pas redirige la page.
+     * Vérifie que le token reçu est le bon.
+     * Si tout est OK, il supprime l'utilisateur de la BDD via doctrine, puis redirige vers la page d'admin.
+     *
+     * @Route("/admin/utilisateur/supprimer/{pseudo}", name="admin_delete", requirements={"pseudo"="\w+"})
+     * @param Request $request
+     * @param string $pseudo
+     * @return RedirectResponse
+     */
+    public function delete(Request $request, string $pseudo): RedirectResponse
+    {
+        if ($this->isAdmin()) {
+            /** @var User $user */
+            $user = $this->doctrine->getRepository(User::class)
+                ->findOneBy(['pseudo' => $pseudo]);
+
+            if (is_null($user)) {
+                return new RedirectResponse('/admin/utilisateurs');
+            }
+
+            $date = new DateTime();
+            $token = hash(
+                'sha512',
+                $user->getPseudo() . $date->format('m') . $user->getLastName() . $date->format('d')
+            );
+
+            if ($request->request->get('token') !== $token) {
+                return new RedirectResponse('/admin/utilisateurs');
+            }
+
+            $manager = $this->doctrine->getManager();
+            $manager->remove($user);
+            $manager->flush();
+
+            return new RedirectResponse('/admin/utilisateurs');
         } else {
             return new RedirectResponse('/erreur/401');
         }

@@ -39,6 +39,17 @@
                     <a class="nav-link a_scrollspy" href="/accueil#tricks">Tricks</a>
                 </li>
 
+                {% if isAdmin == true %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Admin
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="/admin/utilisateurs">Utilisateurs</a>
+                        </div>
+                    </li>
+                {% endif %}
+
                 {% if isConnected == false %}
                     <li class="nav-item">
                         <a class="nav-link" href="/connexion">Connexion</a>
