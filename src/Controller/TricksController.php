@@ -10,18 +10,16 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Twig\Environment;
 
 /**
  * @Route("/trick", name="tricks_")
  * Class TricksController
  * @package App\Controller
  */
-class TricksController
+class TricksController extends AppController
 {
     /**
      * @Route("/show/{category}/{slug}", name="show", requirements={"category"="\w+", "slug"="\w+"})
-     * @param Environment $twig
      * @param RegistryInterface $doctrine
      * @param FormFactoryInterface $formBuilder
      * @param string $slug
@@ -31,7 +29,7 @@ class TricksController
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function show(Environment $twig, RegistryInterface $doctrine, FormFactoryInterface $formBuilder, string $slug, string $category)
+    public function show(RegistryInterface $doctrine, FormFactoryInterface $formBuilder, string $slug, string $category)
     {
         $trick = $doctrine
             ->getRepository(Trick::class)
@@ -46,11 +44,11 @@ class TricksController
                 ->getRepository(Comment::class)
                 ->findBy(['trick' => $trick], ['updatedAt' => 'desc']);
 
-            return new Response($twig->render('tricks/show.html.twig', [
+            return $this->render('tricks/show.html.twig', [
                 'trick'    => $trick,
                 'comments' => $comments,
                 'form'     => $form->createView()
-            ]));
+            ]);
         } else {
             return new RedirectResponse('/accueil', RedirectResponse::HTTP_FOUND);
         }

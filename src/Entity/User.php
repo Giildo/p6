@@ -19,7 +19,7 @@ class User
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=30)
+     * @ORM\Column(type="string", length=30, unique=true)
      * @var string
      */
     private $pseudo;
@@ -43,7 +43,7 @@ class User
     private $lastName;
 
     /**
-     * @ORM\Column(type="string", length=40)
+     * @ORM\Column(type="string", length=40, unique=true)
      * @var string
      */
     private $mail;
@@ -55,10 +55,10 @@ class User
     private $phone;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="mail_validate", type="boolean")
      * @var int
      */
-    private $valid;
+    private $mailValidate;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Status")
@@ -144,19 +144,20 @@ class User
         return $this;
     }
 
-    public function getValid(): ?bool
+    public function getMailValidate(): ?bool
     {
-        return $this->valid;
+        return $this->mailValidate;
     }
 
-    public function setValid(bool $valid): self
+    public function setMailValidate(bool $mailValidate): self
     {
-        $this->valid = $valid;
+        $this->mailValidate = $mailValidate;
 
         return $this;
     }
 
-    public function getStatus(): Status
+
+    public function getStatus(): ?Status
     {
         return $this->status;
     }

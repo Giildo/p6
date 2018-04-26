@@ -1,0 +1,64 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ parent() }} - Administration des utilisateurs{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/css/admin/user.css" />
+{% endblock %}
+
+{% block body %}
+    <h1>Gestion des utilisateurs</h1>
+
+    <div class="row">
+        <div class="offset-sm-1 col-sm-10">
+            <a href="/admin/utilisateur/ajouter" class="btn btn-success">Nouvel utilisateur</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="offset-sm-1 col-sm-10">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Pseudo</th>
+                    <th>Prénom et nom</th>
+                    <th>EMail</th>
+                    <th>Téléphone</th>
+                    <th>Mail validé</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.pseudo }}</td>
+                        <td>{{ user.firstName }} {{ user.lastName }}</td>
+                        <td>{{ user.mail }}</td>
+                        <td>{{ user.phone }}</td>
+                        <td>
+                            {% if user.mailValidate == true %}
+                                <i class="material-icons">check_box</i>
+                            {% else %}
+                                <i class="material-icons">check_box_outline_blank</i>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.status.name }}</td>
+                        <td>
+                            <form method="post" action="/admin/utilisateur/modifier/{{ user.pseudo | lower }}">
+                                <input type="hidden" value="{{ tokens[user.pseudo] }}" name="token" />
+                                <button type="submit" class="btn btn-info">Modifier</button>
+                            </form>
+                            <form method="post" action="/admin/utilisateur/supprimer/{{ user.pseudo | lower }}">
+                                <input type="hidden" value="{{ tokens[user.pseudo] }}" name="token" />
+                                <button type="submit" class="btn btn-warning">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

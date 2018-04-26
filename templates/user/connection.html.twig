@@ -1,0 +1,41 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ pageTitle }}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/css/user/connection.css" />
+{% endblock %}
+
+{% block body %}
+    <h1 style="text-align: center;">{{ pageTitle }}</h1>
+
+    {% if pageType == 'connection' %}
+        <div class="row">
+            <div class="offset-sm-3 col-sm-6">
+                <a href="/enregistrement">Si vous n'avez pas encore de compte, enregistrez-vous</a>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="offset-sm-3 col-sm-6">
+            {% if pageType == 'connection' %}
+                {{ form_start(form) }}
+                {{ form_errors(form) }}
+                {{ form_row(form.pseudo) }}
+                {{ form_row(form.password) }}
+                {{ form_row(form.submit) }}
+            {% elseif pageType == 'registry' %}
+                {{ form_start(form) }}
+                {{ form_errors(form) }}
+                {{ form_row(form.pseudo) }}
+                {{ form_row(form.password) }}
+                {{ form_row(form.firstName) }}
+                {{ form_row(form.lastName) }}
+                {{ form_row(form.mail) }}
+                {{ form_row(form.phone) }}
+                {{ form_row(form.submit) }}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
