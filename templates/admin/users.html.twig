@@ -40,8 +40,8 @@
                         </td>
                         <td>{{ user.status.name }}</td>
                         <td>
-                            <a href="/admin/utilisateur/modifier/{{ user.id }}" class="btn btn-info">Modifier</a>
-                            <a href="/admin/utilisateur/supprimer/{{ user.id }}" class="btn btn-warning">Supprimer</a>
+                            <a href="/admin/modifierUtilisateur/{{ user.pseudo | lower }}" class="btn btn-info">Modifier</a>
+                            <a href="/admin/modifierUtilisateur/{{ user.pseudo | lower }}" class="btn btn-warning">Supprimer</a>
                         </td>
                     </tr>
                 {% endfor %}

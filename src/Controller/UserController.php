@@ -7,8 +7,14 @@ use App\Entity\User;
 use App\Exception\UserException;
 use App\Form\ConnectionType;
 use App\Form\RegistryType;
+use App\Form\UserType;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -182,7 +188,45 @@ class UserController extends AppController
 
             return $this->render('/admin/users.html.twig', compact('users'));
         } else {
-            return new RedirectResponse('/error/401', RedirectResponse::HTTP_UNAUTHORIZED);
+            return new RedirectResponse('/erreur/401');
+        }
+    }
+
+    /**
+     * @Route("/admin/modifierUtilisateur/{pseudo}", name="admin_modify", requirements={"pseudo"="\w+"})
+     * @param Request $request
+     * @param string $pseudo
+     * @return RedirectResponse|Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function modify(Request $request, string $pseudo)
+    {
+        if ($this->isAdmin()) {
+            /** @var User $user */
+            $user = $this->doctrine->getRepository(User::class)
+                ->findOneBy(['pseudo' => $pseudo]);
+
+            $form = $this->createForm(UserType::class, $user);
+            $form->remove('password')
+                ->add('password', HiddenType::class)
+                ->remove('mailValidate')
+                ->add('mailValidate', HiddenType::class);
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $manager = $this->doctrine->getManager();
+                $manager->flush();
+            }
+
+            return $this->render('/admin/modifyUser.html.twig', [
+                'user' => $user,
+                'form' => $form->createView()
+            ]);
+        } else {
+            return new RedirectResponse('/erreur/401');
         }
     }
 
