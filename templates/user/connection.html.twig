@@ -19,9 +19,23 @@
 
     <div class="row">
         <div class="offset-sm-3 col-sm-6">
-            {{ form_start(form) }}
-            {{ form_widget(form) }}
-            {{ form_end(form) }}
+            {% if pageType == 'connection' %}
+                {{ form_start(form) }}
+                {{ form_errors(form) }}
+                {{ form_row(form.pseudo) }}
+                {{ form_row(form.password) }}
+                {{ form_row(form.submit) }}
+            {% elseif pageType == 'registry' %}
+                {{ form_start(form) }}
+                {{ form_errors(form) }}
+                {{ form_row(form.pseudo) }}
+                {{ form_row(form.password) }}
+                {{ form_row(form.firstName) }}
+                {{ form_row(form.lastName) }}
+                {{ form_row(form.mail) }}
+                {{ form_row(form.phone) }}
+                {{ form_row(form.submit) }}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

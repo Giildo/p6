@@ -5,16 +5,10 @@ namespace App\Controller;
 use App\Entity\Status;
 use App\Entity\User;
 use App\Exception\UserException;
-use App\Form\ConnectionType;
-use App\Form\RegistryType;
 use App\Form\UserType;
 use Symfony\Bridge\Doctrine\RegistryInterface;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -51,7 +45,7 @@ class UserController extends AppController
     /**
      * Vérifie si on vient de la page "enregistrement" qui laisse dans la Session la version de l'utilisateur qui vient
      * de créer un compte. Si ce n'est pas la cas, crée un nouvel utilisateur.
-     * Récupère le formulaire de connexion et lui associe l'utilisateur ci-dessus.
+     * Récupère le formulaire de connexion @uses UserType et lui associe l'utilisateur ci-dessus.
      * Attache le formulaire à la requête pour vérifier s'il a été validé et envoyé en POST. Puis valide s'il est valide.
      * Si c'est le cas,
      * @uses UserController::userVerif(). S'il y a une erreur ajoute l'erreur récupérée dans le formulaire. Puis,
@@ -74,7 +68,7 @@ class UserController extends AppController
                 $user = new User();
             }
 
-            $form = $this->createForm(ConnectionType::class, $user);
+            $form = $this->createForm(UserType::class, $user);
 
             $form->handleRequest($request);
 
@@ -104,7 +98,7 @@ class UserController extends AppController
     }
 
     /**
-     * Crée un formulaire, à partir de la classe RegistryType, avec un utilisateur vierge.
+     * Crée un formulaire, à partir de la classe @uses UserType, avec un utilisateur vierge.
      * Attache le formulaire à la requête pour vérifier si on est sur une page avec la méthode POST.
      * Vérifie si le formulaire a été soumis et est valide.
      * Si c'est le cas,
@@ -125,7 +119,7 @@ class UserController extends AppController
         if (!$this->isConnected()) {
             $user = new User();
 
-            $form = $this->createForm(RegistryType::class, $user);
+            $form = $this->createForm(UserType::class, $user);
 
             $form->handleRequest($request);
 
@@ -174,6 +168,9 @@ class UserController extends AppController
     }
 
     /**
+     * Vérifie que l'utilisateur qui essaye d'accéder à la page est administrateur.
+     * Si c'est le cas, récupère tous les utilisateurs et les envoie à la vue.
+     *
      * @Route("/admin/utilisateurs", name="admin_users")
      * @return Response|RedirectResponse
      * @throws \Twig_Error_Loader
@@ -193,6 +190,11 @@ class UserController extends AppController
     }
 
     /**
+     * Vérifie que l'utilisateur qui essaye d'accéder à la page est administrateur.
+     * Récupère l'utilisateur à modifier. Crée un formulaire @uses UserType.
+     * Attache le formulaire à la requête, vérifie s'il a été soumis et s'il est valide.
+     * Si c'est le cas, récupère le manager pour sauvegarder l'utilisateur modifié en BDD.
+     *
      * @Route("/admin/modifierUtilisateur/{pseudo}", name="admin_modify", requirements={"pseudo"="\w+"})
      * @param Request $request
      * @param string $pseudo
