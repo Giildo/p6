@@ -40,8 +40,14 @@
                         </td>
                         <td>{{ user.status.name }}</td>
                         <td>
-                            <a href="/admin/modifierUtilisateur/{{ user.pseudo | lower }}" class="btn btn-info">Modifier</a>
-                            <a href="/admin/modifierUtilisateur/{{ user.pseudo | lower }}" class="btn btn-warning">Supprimer</a>
+                            <form action="/admin/modifierUtilisateur/{{ user.pseudo | lower }}">
+                                <input type="hidden" value="{{ tokens[user.pseudo] }}" name="token" />
+                                <button type="submit" class="btn btn-info">Modifier</button>
+                            </form>
+                            <form action="/admin/supprimerUtilisateur/{{ user.pseudo | lower }}">
+                                <input type="hidden" value="{{ tokens[user.pseudo] }}" name="token" />
+                                <button type="submit" class="btn btn-warning">Supprimer</button>
+                            </form>
                         </td>
                     </tr>
                 {% endfor %}

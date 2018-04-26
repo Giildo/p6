@@ -6,6 +6,7 @@ use App\Entity\Status;
 use App\Entity\User;
 use App\Exception\UserException;
 use App\Form\UserType;
+use DateTime;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormError;
@@ -183,7 +184,16 @@ class UserController extends AppController
             $users = $this->doctrine->getRepository(User::class)
                 ->findAll();
 
-            return $this->render('/admin/users.html.twig', compact('users'));
+            $date = new DateTime();
+            /** @var User $user */
+            $tokens = [];
+            foreach ($users as $user) {
+                $tokens[$user->getPseudo()] = hash(
+                    'sha512',
+                    $user->getPseudo() . $date->format('m') . $user->getLastName() . $date->format('d')
+                );
+            }
+            return $this->render('/admin/users.html.twig', compact('users', 'tokens'));
         } else {
             return new RedirectResponse('/erreur/401');
         }
@@ -209,6 +219,16 @@ class UserController extends AppController
             /** @var User $user */
             $user = $this->doctrine->getRepository(User::class)
                 ->findOneBy(['pseudo' => $pseudo]);
+
+            $date = new DateTime();
+            $token = hash(
+                'sha512',
+                $user->getPseudo() . $date->format('m') . $user->getLastName() . $date->format('d')
+            );
+
+            if ($request->query->get('token') !== $token) {
+                return new RedirectResponse('/admin/utilisateurs');
+            }
 
             $form = $this->createForm(UserType::class, $user);
             $form->remove('password')
