@@ -39,17 +39,19 @@
                                 <a href="/trick/{{ trick.category.name }}/{{ trick.slug }}">
                                     {{ trick.category.name | capitalize }} - {{ trick.name }}
                                 </a>
-                                {% if userConnected is defined and userConnected == true %}
-                                    <span class="modifs">
-                                        <a href="/trick/modifier/{{ trick.category.name }}/{{ trick.slug }}">
-                                            <i class="material-icons">create</i>
-                                        </a>
-                                        <a href="/trick/supprimer/{{ trick.category.name }}/{{ trick.slug }}">
-                                            <i class="material-icons">delete</i>
-                                        </a>
-                                    </span>
-                                {% endif %}
                             </p>
+                            {% if isContrib == true and tokens[trick.id] != null %}
+                                <div class="modifs">
+                                    <form method="post" action="/trick/modifier/{{ trick.id }}">
+                                        <input type="hidden" value="{{ tokens[trick.id] }}" name="token" />
+                                        <button type="submit" class="material-icons">create</button>
+                                    </form>
+                                    <form method="post" action="/trick/supprimer/{{ trick.id }}">
+                                        <input type="hidden" value="{{ tokens[trick.id] }}" name="token" />
+                                        <button type="submit" class="material-icons">delete</button>
+                                    </form>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

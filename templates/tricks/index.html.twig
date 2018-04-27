@@ -36,7 +36,9 @@
                 <tbody>
                 {% for trick in tricks %}
                     <tr>
-                        <td>{{ trick.name }}</td>
+                        <td>
+                            <a href="/trick/{{ trick.category.name }}/{{ trick.name }}">{{ trick.name }}</a>
+                        </td>
                         <td>
                             <a href="/trick/liste/categorie/{{ trick.category.name }}">{{ trick.category.name }}</a>
                         </td>
