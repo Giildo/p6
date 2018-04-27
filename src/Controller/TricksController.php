@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Date;
 use Twig\Environment;
 
 /**
@@ -71,11 +72,22 @@ class TricksController extends AppController
                 }
             }
 
+            /** @var Trick $trick */
+            $tokens = [];
+            $date = new DateTime();
+            foreach ($tricks as $trick) {
+                $tokens[$trick->getId()] = hash(
+                    'sha512',
+                    $trick->getId() . $date->format('d') . $trick->getName() . $date->format('m')
+                );
+            }
+
             return $this->render('/tricks/index.html.twig', compact(
                 'tricks',
                 'filtered',
                 'category',
-                'options'
+                'options',
+                'tokens'
             ));
         } else {
             return new RedirectResponse('/accueil');
@@ -102,6 +114,16 @@ class TricksController extends AppController
                 return new RedirectResponse('/trick/liste');
             }
 
+            $date = new DateTime();
+            $tokenVerif = hash(
+                'sha512',
+                $trick->getId() . $date->format('d') . $trick->getName() . $date->format('m')
+            );
+
+            if ($tokenVerif !== $request->request->get('token')) {
+                return new RedirectResponse('/trick/liste');
+            }
+
             $form = $this->createForm(TrickType::class, $trick);
             $form->remove('createdAt')
                 ->remove('updatedAt')
@@ -120,6 +142,41 @@ class TricksController extends AppController
             return $this->render('/tricks/add.html.twig', [
                 'form' => $form->createView()
             ]);
+        } else {
+            return new RedirectResponse('/accueil');
+        }
+    }
+
+    /**
+     * @Route("/supprimer/{id}", name="delete", requirements={"id"="\w+"})
+     * @param Request $request
+     * @param int $id
+     * @return RedirectResponse
+     */
+    public function delete(Request $request, int $id) {
+        if ($this->isContrib()) {
+            $trick = $this->doctrine->getRepository(Trick::class)
+                ->find($id);
+
+            if (is_null($trick)) {
+                return new RedirectResponse('/trick/liste');
+            }
+
+            $date = new DateTime();
+            $tokenVerif = hash(
+                'sha512',
+                $trick->getId() . $date->format('d') . $trick->getName() . $date->format('m')
+            );
+
+            if ($tokenVerif !== $request->request->get('token')) {
+                return new RedirectResponse('/trick/liste');
+            }
+
+            $manager = $this->doctrine->getManager();
+            $manager->remove($trick);
+            $manager->flush();
+
+            return new RedirectResponse('/trick/liste');
         } else {
             return new RedirectResponse('/accueil');
         }

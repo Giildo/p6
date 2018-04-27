@@ -54,11 +54,11 @@
                         </td>
                         <td>
                             <form method="post" action="/trick/modifier/{{ trick.id }}">
-                                <input type="hidden" value="value" name="token" />
+                                <input type="hidden" value="{{ tokens[trick.id] }}" name="token" />
                                 <button type="submit" class="btn btn-info">Modifier</button>
                             </form>
                             <form method="post" action="/trick/supprimer/{{ trick.id }}">
-                                <input type="hidden" value="value" name="token" />
+                                <input type="hidden" value="{{ tokens[trick.id] }}" name="token" />
                                 <button type="submit" class="btn btn-warning">Supprimer</button>
                             </form>
                         </td>
