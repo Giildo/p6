@@ -108,13 +108,22 @@ header figure .btn a i {
   border-bottom-right-radius: 20px;
 }
 /* line 121, ../../sass/index.scss */
+#tricks .card .card-footer .card-text {
+  margin: 0;
+}
+/* line 125, ../../sass/index.scss */
 #tricks .card .card-footer .modifs {
   position: absolute;
   right: 10px;
+  bottom: 5px;
 }
-/* line 125, ../../sass/index.scss */
-#tricks .card .card-footer .modifs i {
-  position: relative;
-  margin: 0 5px;
-  top: -50%;
+/* line 130, ../../sass/index.scss */
+#tricks .card .card-footer .modifs form {
+  display: inline-block;
+}
+/* line 133, ../../sass/index.scss */
+#tricks .card .card-footer .modifs form button {
+  background: none;
+  border: none;
+  cursor: pointer;
 }

@@ -4,10 +4,15 @@ h1 {
 }
 
 /* line 5, ../../../sass/admin/user.scss */
+h2 {
+  text-align: center;
+}
+
+/* line 9, ../../../sass/admin/user.scss */
 table {
   margin: 30px 0;
 }
-/* line 8, ../../../sass/admin/user.scss */
+/* line 12, ../../../sass/admin/user.scss */
 table form {
   display: inline-block;
 }

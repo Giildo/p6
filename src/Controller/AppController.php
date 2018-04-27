@@ -39,6 +39,20 @@ abstract class AppController extends Controller
         return true;
     }
 
+    protected function isContrib(): bool
+    {
+        if ($this->isConnected()) {
+            $session = new Session();
+
+            /** @var User $user */
+            $user = $session->get('user');
+
+            return $user->getStatus()->getId() === 2 || $user->getStatus()->getId() === 3;
+        } else {
+            return false;
+        }
+    }
+
     protected function isAdmin(): bool
     {
         if ($this->isConnected()) {
@@ -65,6 +79,7 @@ abstract class AppController extends Controller
     protected function render(string $view, array $parameters = array(), Response $response = null): Response
     {
         $parameters['isAdmin'] = $this->isAdmin();
+        $parameters['isContrib'] = $this->isContrib();
         $parameters['isConnected'] = $this->isConnected();
 
         return new Response($this->twig->render($view, $parameters));

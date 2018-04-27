@@ -30,26 +30,28 @@
             {% for trick in tricks %}
                 <div class="card col-lg-3 col-md-4 col-sm-12">
                     <div class="card-block">
-                        <a href="/trick/show/{{ trick.category.name }}/{{ trick.slug }}">
+                        <a href="/trick/{{ trick.category.name }}/{{ trick.slug }}">
                             <img src="/img/header.jpg" alt="Image du trick" class="card-img-top"/>
                         </a>
 
                         <div class="card-footer">
                             <p class="card-text">
-                                <a href="/trick/show/{{ trick.category.name }}/{{ trick.slug }}">
+                                <a href="/trick/{{ trick.category.name }}/{{ trick.slug }}">
                                     {{ trick.category.name | capitalize }} - {{ trick.name }}
                                 </a>
-                                {% if userConnected is defined and userConnected == true %}
-                                    <span class="modifs">
-                                        <a href="/trick/update/{{ trick.category.name }}/{{ trick.slug }}">
-                                            <i class="material-icons">create</i>
-                                        </a>
-                                        <a href="/trick/delete/{{ trick.category.name }}/{{ trick.slug }}">
-                                            <i class="material-icons">delete</i>
-                                        </a>
-                                    </span>
-                                {% endif %}
                             </p>
+                            {% if isContrib == true and tokens[trick.id] != null %}
+                                <div class="modifs">
+                                    <form method="post" action="/trick/modifier/{{ trick.id }}">
+                                        <input type="hidden" value="{{ tokens[trick.id] }}" name="token" />
+                                        <button type="submit" class="material-icons">create</button>
+                                    </form>
+                                    <form method="post" action="/trick/supprimer/{{ trick.id }}">
+                                        <input type="hidden" value="{{ tokens[trick.id] }}" name="token" />
+                                        <button type="submit" class="material-icons">delete</button>
+                                    </form>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
