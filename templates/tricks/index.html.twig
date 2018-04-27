@@ -53,12 +53,12 @@
                             <a href="/trick/liste/auteur/{{ trick.user.pseudo }}">{{ trick.user.pseudo }}</a>
                         </td>
                         <td>
-                            <form method="post" action="/admin/utilisateur/modifier/{{ trick.id | lower }}">
-                                <input type="hidden" value="" name="token" />
+                            <form method="post" action="/trick/modifier/{{ trick.id }}">
+                                <input type="hidden" value="value" name="token" />
                                 <button type="submit" class="btn btn-info">Modifier</button>
                             </form>
-                            <form method="post" action="/admin/utilisateur/supprimer/{{ trick.id | lower }}">
-                                <input type="hidden" value="" name="token" />
+                            <form method="post" action="/trick/supprimer/{{ trick.id }}">
+                                <input type="hidden" value="value" name="token" />
                                 <button type="submit" class="btn btn-warning">Supprimer</button>
                             </form>
                         </td>

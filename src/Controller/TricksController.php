@@ -9,6 +9,7 @@ use App\Form\TrickType;
 use App\Repository\TrickRepository;
 use DateTime;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Component\DependencyInjection\Tests\Compiler\D;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -76,6 +77,49 @@ class TricksController extends AppController
                 'category',
                 'options'
             ));
+        } else {
+            return new RedirectResponse('/accueil');
+        }
+    }
+
+    /**
+     * @Route("/modifier/{id}", name="modify", requirements={"id"="\d+"})
+     * @param Request $request
+     * @param int $id
+     * @return RedirectResponse|Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function modify(Request $request, int $id)
+    {
+        if ($this->isContrib()) {
+            /** @var Trick $trick */
+            $trick = $this->doctrine->getRepository(Trick::class)
+                ->find($id);
+
+            if (is_null($trick)) {
+                return new RedirectResponse('/trick/liste');
+            }
+
+            $form = $this->createForm(TrickType::class, $trick);
+            $form->remove('createdAt')
+                ->remove('updatedAt')
+                ->remove('user');
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $trick->setUpdatedAt(new DateTime());
+
+                $manager = $this->doctrine->getManager();
+                $manager->flush();
+                return new RedirectResponse('/trick/liste');
+            }
+
+            return $this->render('/tricks/add.html.twig', [
+                'form' => $form->createView()
+            ]);
         } else {
             return new RedirectResponse('/accueil');
         }
