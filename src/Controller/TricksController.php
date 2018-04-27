@@ -36,6 +36,25 @@ class TricksController extends AppController
     }
 
     /**
+     * @Route("/liste", name="index")
+     * @return RedirectResponse|Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function index()
+    {
+        if ($this->isContrib()) {
+            $tricks = $this->doctrine->getRepository(Trick::class)
+                ->findAll();
+
+            return $this->render('/tricks/index.html.twig', compact('tricks'));
+        } else {
+            return new RedirectResponse('/accueil');
+        }
+    }
+
+    /**
      * @Route("/{category}/{slug}", name="show", requirements={"category"="\w+", "slug"="\w+"})
      * @param FormFactoryInterface $formBuilder
      * @param string $slug
