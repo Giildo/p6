@@ -7,7 +7,10 @@
 {% endblock %}
 
 {% block body %}
+
     <h1>Liste des Tricks</h1>
+
+    {% if filtered ==true %}<h2>{{ category }} : {{ options }}</h2>{% endif %}
 
     <div class="row">
         <div class="offset-sm-1 col-sm-10">
@@ -34,7 +37,9 @@
                 {% for trick in tricks %}
                     <tr>
                         <td>{{ trick.name }}</td>
-                        <td>{{ trick.category.name }}</td>
+                        <td>
+                            <a href="/trick/liste/categorie/{{ trick.category.name }}">{{ trick.category.name }}</a>
+                        </td>
                         <td>
                             {% if trick.published == true %}
                                 <i class="material-icons">check_box</i>
@@ -42,9 +47,11 @@
                                 <i class="material-icons">check_box_outline_blank</i>
                             {% endif %}
                         </td>
-                        <td>{{ trick.createdAt | date('d-m-Y H:m') }}</td>
-                        <td>{{ trick.updatedAt | date('d-m-Y H:m') }}</td>
-                        <td>{{ trick.user.pseudo }}</td>
+                        <td>{{ trick.createdAt | date('d-m-Y H:i') }}</td>
+                        <td>{{ trick.updatedAt | date('d-m-Y H:i') }}</td>
+                        <td>
+                            <a href="/trick/liste/auteur/{{ trick.user.pseudo }}">{{ trick.user.pseudo }}</a>
+                        </td>
                         <td>
                             <form method="post" action="/admin/utilisateur/modifier/{{ trick.id | lower }}">
                                 <input type="hidden" value="" name="token" />
@@ -61,4 +68,12 @@
             </table>
         </div>
     </div>
+
+    {% if filtered == true %}
+        <div class="row returnLink">
+            <div class="offset-sm-1 col-sm-10">
+                <a href="/trick/liste"><- Retourner à la liste générale</a>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

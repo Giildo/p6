@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Entity\Trick;
 use App\Entity\User;
 use App\Form\TrickType;
+use App\Repository\TrickRepository;
 use DateTime;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -36,19 +37,45 @@ class TricksController extends AppController
     }
 
     /**
-     * @Route("/liste", name="index")
+     * @Route("/liste/{category}/{options}",
+     *     name="index",
+     *     defaults={"category"=null, "options"=null},
+     *     requirements={"category"="auteur|categorie", "options"="\w+"})
+     * @param null|string $category
+     * @param null|string $options
      * @return RedirectResponse|Response
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function index()
+    public function index(?string $category = null, ?string $options = null)
     {
         if ($this->isContrib()) {
-            $tricks = $this->doctrine->getRepository(Trick::class)
-                ->findAll();
+            $filtered = false;
 
-            return $this->render('/tricks/index.html.twig', compact('tricks'));
+            if (is_null($options) && is_null($category)) {
+                $tricks = $this->doctrine->getRepository(Trick::class)
+                    ->findAll();
+            } else {
+                /** @var TrickRepository $trickRepository */
+                $trickRepository = $this->doctrine->getRepository(Trick::class);
+                $filtered = true;
+
+                if ($category === 'auteur') {
+                    $tricks = $trickRepository->findByAuthor($options);
+                    $category = ucfirst($category);
+                } elseif ($category === 'categorie') {
+                    $tricks = $trickRepository->findByCategory($options);
+                    $category = 'Catégorie';
+                }
+            }
+
+            return $this->render('/tricks/index.html.twig', compact(
+                'tricks',
+                'filtered',
+                'category',
+                'options'
+            ));
         } else {
             return new RedirectResponse('/accueil');
         }
@@ -101,9 +128,6 @@ class TricksController extends AppController
     public function add(Request $request, SessionInterface $session)
     {
         if ($this->isConnected()) {
-            $essai = $this->doctrine->getRepository(Trick::class)
-                ->find(1);
-
             $trick = new Trick();
 
             $form = $this->createForm(TrickType::class, $trick);
@@ -118,8 +142,10 @@ class TricksController extends AppController
                 $userConnected = $this->doctrine->getRepository(User::class)
                     ->find($session->get('user')->getId());
 
-                $trick->setCreatedAt(new DateTime('now'))
-                    ->setUpdatedAt($trick->getCreatedAt())
+                $dateTime = new DateTime();
+
+                $trick->setCreatedAt($dateTime)
+                    ->setUpdatedAt($dateTime)
                     ->setUser($userConnected);
 
                 $manager = $this->doctrine->getManager();

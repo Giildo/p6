@@ -19,6 +19,26 @@ class TrickRepository extends ServiceEntityRepository
         parent::__construct($registry, Trick::class);
     }
 
+    public function findByAuthor(string $author)
+    {
+        return $this->createQueryBuilder('t')
+            ->innerJoin('t.user', 'u')
+            ->andWhere('u.pseudo = :pseudo')
+            ->setParameter('pseudo', $author)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByCategory(string $category)
+    {
+        return $this->createQueryBuilder('t')
+            ->innerJoin('t.category', 'c')
+            ->andWhere('c.name = :category')
+            ->setParameter('category', $category)
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Trick[] Returns an array of Trick objects
 //     */
