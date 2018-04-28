@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Comment;
 use App\Entity\Trick;
 use App\Entity\User;
+use App\Form\CommentType;
 use App\Form\TrickType;
 use App\Repository\TrickRepository;
 use DateTime;
@@ -182,7 +183,8 @@ class TricksController extends AppController
 
     /**
      * @Route("/{category}/{slug}", name="show", requirements={"category"="\w+", "slug"="\w+"})
-     * @param FormFactoryInterface $formBuilder
+     * @param Request $request
+     * @param SessionInterface $session
      * @param string $slug
      * @param string $category
      * @return Response|RedirectResponse
@@ -190,16 +192,41 @@ class TricksController extends AppController
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function show(FormFactoryInterface $formBuilder, string $slug, string $category)
+    public function show(Request $request, SessionInterface $session, string $slug, string $category)
     {
+        /** @var Trick $trick */
         $trick = $this->doctrine
             ->getRepository(Trick::class)
             ->findOneBy(["slug" => $slug]);
 
         if (!is_null($trick) && $trick->getCategory()->getName() === $category) {
-            $form = $formBuilder->createBuilder()
-                ->add('comment', TextareaType::class, ['label' => 'Laisser un commentaire'])
-                ->getForm();
+            $comment = new Comment();
+            $form = $this->createForm(CommentType::class, $comment);
+
+            $form->remove('createdAt')
+                ->remove('updatedAt')
+                ->remove('trick')
+                ->remove('user');
+
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $date = new DateTime();
+
+                /** @var User $user */
+                $user = $this->doctrine->getRepository(User::class)
+                    ->find($session->get('user')->getId());
+
+                $comment->setCreatedAt($date)
+                    ->setUpdatedAt($date)
+                    ->setUser($user)
+                    ->setTrick($trick);
+
+                $manager = $this->doctrine->getManager();
+                $manager->persist($comment);
+                $manager->flush();
+
+                return new RedirectResponse('/trick/' . $trick->getCategory()->getName() . '/' . $trick->getName());
+            }
 
             $comments = $this->doctrine
                 ->getRepository(Comment::class)
