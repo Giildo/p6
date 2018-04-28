@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Picture;
 use App\Entity\Status;
 use App\Entity\User;
 use App\Exception\UserException;
@@ -339,6 +340,73 @@ class UserController extends AppController
         } else {
             return new RedirectResponse('/erreur/401');
         }
+    }
+
+    /**
+     * @Route("/profil/{pseudo}", name="profil", requirements={"pseudo"="\w+"})
+     * @param string $pseudo
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function profil(string $pseudo)
+    {
+        /** @var User $user */
+        $user = $this->doctrine->getRepository(User::class)
+            ->findOneBy(['pseudo' => $pseudo]);
+
+        $form = $this->createForm(UserType::class, $user);
+
+        if (isset($_FILES['picture'])) {
+            //Vérification pour l'extension du fichier
+            $nameExplode = explode('.', $_FILES['picture']['name']);
+            if (in_array(end($nameExplode), ['jpg', 'png', 'gif'])) {
+                $manager = $this->doctrine->getManager();
+                $date = new DateTime();
+                if (!is_null($user->getPicture())) {
+                    $filePath = dirname(__DIR__, 2) .
+                        '/public/img/pic_dl/users/' .
+                        $user->getPicture()->getName() .
+                        '.' .
+                        $user->getPicture()->getExt();
+
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+
+                    $picture = $user->getPicture();
+                    $picture->setName($user->getPseudo() . $date->format('YmdHi'))
+                        ->setExt(end($nameExplode));
+                    $manager->persist($picture);
+                    $manager->flush();
+                } else {
+                    $picture = new Picture();
+                    $picture->setAlt('Photo de profil de ' . $user->getPseudo())
+                        ->setExt(end($nameExplode))
+                        ->setName($user->getPseudo() . $date->format('YmdHi'));
+                    $manager->persist($picture);
+                    $manager->flush();
+
+                    /** @var Picture $picture */
+                    $picture = $this->doctrine->getRepository(Picture::class)
+                        ->findOneBy(['name' => $user->getPseudo() . $date->format('YmdHi')]);
+                    $user->setPicture($picture);
+                    $manager->persist($user);
+                    $manager->flush();
+                }
+
+                move_uploaded_file(
+                    $_FILES['picture']['tmp_name'],
+                    'img/pic_dl/users/' . $picture->getName() . '.' . $picture->getExt()
+                );
+            }
+        }
+
+        return $this->render('/user/profil.html.twig', [
+            'user' => $user,
+            'form' => $form->createView()
+        ]);
     }
 
     /**
