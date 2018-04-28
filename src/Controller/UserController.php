@@ -369,13 +369,14 @@ class UserController extends AppController
 
     /**
      * @Route("/profil/modifier/{pseudo}", name="profil_modify", requirements={"pseudo"="\w+"})
+     * @param Request $request
      * @param string $pseudo
      * @return Response|RedirectResponse
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function profilModify(string $pseudo)
+    public function profilModify(Request $request, string $pseudo)
     {
         if ($this->isConnected()) {
             /** @var User $user */
@@ -385,11 +386,14 @@ class UserController extends AppController
             if (!is_null($user)) {
                 $date = new DateTime();
                 $userConnected = $this->session->get('user');
+
+                //Vérifie que l'utilisateur connecté est le même que celui du profil
                 if ($userConnected->getPseudo() === $user->getPseudo()) {
                     $form = $this->createForm(UserType::class, $user);
                     $form->remove('mailValidate')
                         ->remove('status');
 
+                    //Vérifie que la variable FILES existe
                     if (isset($_FILES['picture'])) {
                         //Vérification pour l'extension du fichier
                         $nameExplode = explode('.', $_FILES['picture']['name']);
@@ -434,6 +438,17 @@ class UserController extends AppController
                         }
                     }
 
+                    //Prend en charge les modifications du profil et le charge en BDD
+                    $form->handleRequest($request);
+                    if ($form->isSubmitted() && $form->isValid()) {
+                        $manager = $this->doctrine->getManager();
+                        $manager->persist($user);
+                        $manager->flush();
+
+                        return new RedirectResponse('/profil/' . $user->getPseudo());
+                    }
+
+                    //Crée un Token pour la suppression de l'image de profil
                     $picToken = null;
                     if (!is_null($user->getPicture())) {
                         $picToken = hash(
