@@ -1,0 +1,54 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ user.pseudo }}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/css/user/profil.css"/>
+{% endblock %}
+
+{% block body %}
+    <h1>Profil</h1>
+
+    <section class="row">
+        <div class="offset-sm-1 col-sm-3">
+            <h3>Image de profil :</h3>
+            {% if user.picture is not null %}
+                <img src="/img/pic_dl/users/{{ user.picture.name }}.{{ user.picture.ext }}" alt="{{ user.picture.alt }}"
+                     class="img-fluid"/>
+            {% else %}
+                <img src="/img/pic_dl/users/avatar.jpg" alt="Photo de profil par défaut" />
+            {% endif %}
+        </div>
+        <div class="col-sm-7">
+            <table class="table table-striped">
+                <tbody>
+                <tr>
+                    <th scope="row">Pseudo</th>
+                    <td>{{ user.pseudo }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Prénom & nom</th>
+                    <td>{{ user.firstName }} {{ user.lastName }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">EMail</th>
+                    <td>{{ user.mail }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Téléphone</th>
+                    <td>{{ user.phone }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Status</th>
+                    <td>{{ user.status.name }}</td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="2"><a href="/profil/modifier/{{ user.pseudo }}">Modifier le profil ></a></td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </section>
+{% endblock %}

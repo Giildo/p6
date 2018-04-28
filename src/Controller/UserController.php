@@ -343,6 +343,31 @@ class UserController extends AppController
     }
 
     /**
+     * @Route("/profil/{pseudo}", name="profil_index", requirements={"pseudo"="\w+"})
+     * @param string $pseudo
+     * @return RedirectResponse|Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function profilIndex(string $pseudo)
+    {
+        if ($this->isConnected()) {
+            /** @var User $user */
+            $user = $this->doctrine->getRepository(User::class)
+                ->findOneBy(['pseudo' => $pseudo]);
+
+            if (!is_null($user)) {
+                return $this->render('/user/profil_index.html.twig', compact('user'));
+            } else {
+                return new RedirectResponse('/accueil');
+            }
+        } else {
+            return new RedirectResponse('/accueil');
+        }
+    }
+
+    /**
      * @Route("/profil/modifier/{pseudo}", name="profil_modify", requirements={"pseudo"="\w+"})
      * @param string $pseudo
      * @return Response|RedirectResponse
@@ -362,6 +387,8 @@ class UserController extends AppController
                 $userConnected = $this->session->get('user');
                 if ($userConnected->getPseudo() === $user->getPseudo()) {
                     $form = $this->createForm(UserType::class, $user);
+                    $form->remove('mailValidate')
+                        ->remove('status');
 
                     if (isset($_FILES['picture'])) {
                         //Vérification pour l'extension du fichier

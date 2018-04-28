@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Profil</h1>
+    <h1>Modifier le profil</h1>
 
     <section class="row">
         <div class="offset-sm-1 col-sm-3">
@@ -35,4 +35,10 @@
             {{ form_end(form) }}
         </div>
     </section>
+
+    <div class="row">
+        <div class="offset-sm-1 col-sm-10">
+            <a href="/profil/{{ user.pseudo }}">< Retourner à l'affichage du profil</a>
+        </div>
+    </div>
 {% endblock %}

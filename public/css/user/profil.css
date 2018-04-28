@@ -1,14 +1,19 @@
-/* line 2, ../../../sass/user/profil.scss */
+/* line 1, ../../../sass/user/profil.scss */
+h1 {
+  text-align: center;
+}
+
+/* line 6, ../../../sass/user/profil.scss */
 section .col-sm-3 {
   position: relative;
 }
-/* line 4, ../../../sass/user/profil.scss */
+/* line 8, ../../../sass/user/profil.scss */
 section .col-sm-3 form {
   position: absolute;
   top: 50px;
   right: 25px;
 }
-/* line 9, ../../../sass/user/profil.scss */
+/* line 13, ../../../sass/user/profil.scss */
 section .col-sm-3 form button {
   width: 35px;
   height: 35px;
