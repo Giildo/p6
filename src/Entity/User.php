@@ -181,7 +181,7 @@ class User
         return $this->picture;
     }
 
-    public function setPicture(Picture $picture): self
+    public function setPicture(?Picture $picture = null): self
     {
         $this->picture = $picture;
 

@@ -343,70 +343,113 @@ class UserController extends AppController
     }
 
     /**
-     * @Route("/profil/{pseudo}", name="profil", requirements={"pseudo"="\w+"})
+     * @Route("/profil/modifier/{pseudo}", name="profil_modify", requirements={"pseudo"="\w+"})
      * @param string $pseudo
-     * @return Response
+     * @return Response|RedirectResponse
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function profil(string $pseudo)
+    public function profilModify(string $pseudo)
     {
-        /** @var User $user */
-        $user = $this->doctrine->getRepository(User::class)
-            ->findOneBy(['pseudo' => $pseudo]);
+        if ($this->isConnected()) {
+            /** @var User $user */
+            $user = $this->doctrine->getRepository(User::class)
+                ->findOneBy(['pseudo' => $pseudo]);
 
-        $form = $this->createForm(UserType::class, $user);
-
-        if (isset($_FILES['picture'])) {
-            //Vérification pour l'extension du fichier
-            $nameExplode = explode('.', $_FILES['picture']['name']);
-            if (in_array(end($nameExplode), ['jpg', 'png', 'gif'])) {
-                $manager = $this->doctrine->getManager();
+            if (!is_null($user)) {
                 $date = new DateTime();
-                if (!is_null($user->getPicture())) {
-                    $filePath = dirname(__DIR__, 2) .
-                        '/public/img/pic_dl/users/' .
-                        $user->getPicture()->getName() .
-                        '.' .
-                        $user->getPicture()->getExt();
+                $userConnected = $this->session->get('user');
+                if ($userConnected->getPseudo() === $user->getPseudo()) {
+                    $form = $this->createForm(UserType::class, $user);
 
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
+                    if (isset($_FILES['picture'])) {
+                        //Vérification pour l'extension du fichier
+                        $nameExplode = explode('.', $_FILES['picture']['name']);
+                        if (in_array(end($nameExplode), ['jpg', 'png', 'gif'])) {
+                            $manager = $this->doctrine->getManager();
+                            if (!is_null($user->getPicture())) {
+                                $filePath = dirname(__DIR__, 2) .
+                                    '/public/img/pic_dl/users/' .
+                                    $user->getPicture()->getName() .
+                                    '.' .
+                                    $user->getPicture()->getExt();
+
+                                if (file_exists($filePath)) {
+                                    unlink($filePath);
+                                }
+
+                                $picture = $user->getPicture();
+                                $picture->setName($user->getPseudo() . $date->format('YmdHi'))
+                                    ->setExt(end($nameExplode));
+                                $manager->persist($picture);
+                                $manager->flush();
+                            } else {
+                                $picture = new Picture();
+                                $picture->setAlt('Photo de profil de ' . $user->getPseudo())
+                                    ->setExt(end($nameExplode))
+                                    ->setName($user->getPseudo() . $date->format('YmdHi'));
+                                $manager->persist($picture);
+                                $manager->flush();
+
+                                /** @var Picture $picture */
+                                $picture = $this->doctrine->getRepository(Picture::class)
+                                    ->findOneBy(['name' => $user->getPseudo() . $date->format('YmdHi')]);
+                                $user->setPicture($picture);
+                                $manager->persist($user);
+                                $manager->flush();
+                            }
+
+                            move_uploaded_file(
+                                $_FILES['picture']['tmp_name'],
+                                'img/pic_dl/users/' . $picture->getName() . '.' . $picture->getExt()
+                            );
+                        }
                     }
 
-                    $picture = $user->getPicture();
-                    $picture->setName($user->getPseudo() . $date->format('YmdHi'))
-                        ->setExt(end($nameExplode));
-                    $manager->persist($picture);
-                    $manager->flush();
+                    $picToken = null;
+                    if (!is_null($user->getPicture())) {
+                        $picToken = hash(
+                            'sha512',
+                            $user->getPseudo() . $date->format('d') . $user->getPicture()->getAlt()
+                        );
+
+                        if (isset($_POST['picture']['delete'])) {
+                            if ($_POST['picture']['delete'] === $picToken) {
+                                $filePath = dirname(__DIR__, 2) .
+                                    '/public/img/pic_dl/users/' .
+                                    $user->getPicture()->getName() .
+                                    '.' .
+                                    $user->getPicture()->getExt();
+
+                                if (file_exists($filePath)) {
+                                    unlink($filePath);
+                                }
+
+                                $manager = $this->doctrine->getManager();
+                                $picture = $user->getPicture();
+                                $manager->remove($picture);
+                                $user->setPicture(null);
+                                $manager->persist($user);
+                                $manager->flush();
+                            }
+                        }
+                    }
+
+                    return $this->render('/user/profil_modify.html.twig', [
+                        'user'     => $user,
+                        'form'     => $form->createView(),
+                        'picToken' => $picToken
+                    ]);
                 } else {
-                    $picture = new Picture();
-                    $picture->setAlt('Photo de profil de ' . $user->getPseudo())
-                        ->setExt(end($nameExplode))
-                        ->setName($user->getPseudo() . $date->format('YmdHi'));
-                    $manager->persist($picture);
-                    $manager->flush();
-
-                    /** @var Picture $picture */
-                    $picture = $this->doctrine->getRepository(Picture::class)
-                        ->findOneBy(['name' => $user->getPseudo() . $date->format('YmdHi')]);
-                    $user->setPicture($picture);
-                    $manager->persist($user);
-                    $manager->flush();
+                    return new RedirectResponse('/accueil');
                 }
-
-                move_uploaded_file(
-                    $_FILES['picture']['tmp_name'],
-                    'img/pic_dl/users/' . $picture->getName() . '.' . $picture->getExt()
-                );
+            } else {
+                return new RedirectResponse('/accueil');
             }
+        } else {
+            return new RedirectResponse('/accueil');
         }
-
-        return $this->render('/user/profil.html.twig', [
-            'user' => $user,
-            'form' => $form->createView()
-        ]);
     }
 
     /**

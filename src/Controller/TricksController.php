@@ -30,7 +30,7 @@ class TricksController extends AppController
      */
     private $doctrine;
 
-    public function __construct(Environment $twig, RegistryInterface $doctrine)
+    public function __construct(Environment $twig, RegistryInterface $doctrine, SessionInterface $session)
     {
         parent::__construct($twig);
         $this->doctrine = $doctrine;
