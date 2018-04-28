@@ -82,6 +82,11 @@ abstract class AppController extends Controller
         $parameters['isContrib'] = $this->isContrib();
         $parameters['isConnected'] = $this->isConnected();
 
+        if ($this->isConnected()) {
+            $session = new Session();
+            $parameters['userConnected'] = $session->get('user');
+        }
+
         return new Response($this->twig->render($view, $parameters));
     }
 }

@@ -1,0 +1,44 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ user.pseudo }}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/css/user/profil.css"/>
+{% endblock %}
+
+{% block body %}
+    <h1>Modifier le profil</h1>
+
+    <section class="row">
+        <div class="offset-sm-1 col-sm-3">
+            <h3>Image de profil :</h3>
+            {% if user.picture is not null %}
+                <img src="/img/pic_dl/users/{{ user.picture.name }}.{{ user.picture.ext }}" alt="{{ user.picture.alt }}"
+                     class="img-fluid"/>
+                <form method="post" name="picture">
+                    <input type="hidden" name="picture[delete]" value="{{ picToken }}" />
+                    <button type="submit" class="material-icons">close</button>
+                </form>
+            {% else %}
+                <img src="/img/pic_dl/users/avatar.jpg" alt="Photo de profil par défaut" />
+            {% endif %}
+        </div>
+        <div class="col-sm-7">
+            {{ form_start(form, {'multipart': true}) }}
+            <div class="form-group row">
+                <label for="picture" class="col-form-label col-sm-2 form-control-label required">Photo de profil</label>
+                <div class="col-sm-10">
+                    <input type="file" accept=".png, .jpg, .gif" class="form-control" name="picture" id="picture"/>
+                </div>
+            </div>
+            {{ form_widget(form) }}
+            {{ form_end(form) }}
+        </div>
+    </section>
+
+    <div class="row">
+        <div class="offset-sm-1 col-sm-10">
+            <a href="/profil/{{ user.pseudo }}">< Retourner à l'affichage du profil</a>
+        </div>
+    </div>
+{% endblock %}

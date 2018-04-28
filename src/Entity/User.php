@@ -67,6 +67,13 @@ class User
      */
     private $status;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Picture")
+     * @ORM\JoinColumn(nullable=true)
+     * @var Picture
+     */
+    private $picture;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -165,6 +172,18 @@ class User
     public function setStatus(Status $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getPicture(): ?Picture
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(?Picture $picture = null): self
+    {
+        $this->picture = $picture;
 
         return $this;
     }
