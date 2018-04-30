@@ -70,7 +70,13 @@ class UserController extends AppController
                 $user = new User();
             }
 
-            $form = $this->createForm(UserType::class, $user);
+            $form = $this->createForm(UserType::class, $user)
+                ->remove('firstName')
+                ->remove('lastName')
+                ->remove('mail')
+                ->remove('phone')
+                ->remove('mailValidate')
+                ->remove('status');
 
             $form->handleRequest($request);
 
@@ -121,7 +127,9 @@ class UserController extends AppController
         if (!$this->isConnected()) {
             $user = new User();
 
-            $form = $this->createForm(UserType::class, $user);
+            $form = $this->createForm(UserType::class, $user)
+                ->remove('mailValidate')
+                ->remove('status');
 
             $form->handleRequest($request);
 
