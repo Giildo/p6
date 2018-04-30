@@ -3,13 +3,13 @@
 {% block title %}{{ parent() }} - Accueil{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="/css/index.css"/>
+    <link rel="stylesheet" href="/p6/public/css/index.css"/>
 {% endblock %}
 
 {% block body %}
     <header class="row" id="top">
         <figure class="offset-sm-12">
-            <img src="/img/header.jpg" alt="Photo d'un snowboarder faisant une figure de snow" class="img-fluid"/>
+            <img src="/p6/public/img/header.jpg" alt="Photo d'un snowboarder faisant une figure de snow" class="img-fluid"/>
             <h1 id="header_title">Snow<span class="bold shift">Tricks</span></h1>
             <figcaption>
                 Photo de <a href="https://unsplash.com/@saltnstreets" target="_blank">Alesia Kazantceva</a> sur
@@ -30,13 +30,13 @@
             {% for trick in tricks %}
                 <div class="card col-lg-3 col-md-4 col-sm-12">
                     <div class="card-block">
-                        <a href="/trick/{{ trick.category.name }}/{{ trick.slug }}">
-                            <img src="/img/header.jpg" alt="Image du trick" class="card-img-top"/>
+                        <a href="/p6/trick/{{ trick.category.name }}/{{ trick.slug }}">
+                            <img src="/p6/public/img/header.jpg" alt="Image du trick" class="card-img-top"/>
                         </a>
 
                         <div class="card-footer">
                             <p class="card-text">
-                                <a href="/trick/{{ trick.category.name }}/{{ trick.slug }}">
+                                <a href="/p6/trick/{{ trick.category.name }}/{{ trick.slug }}">
                                     {{ trick.category.name | capitalize }} - {{ trick.name }}
                                 </a>
                             </p>
@@ -61,5 +61,5 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script src="/js/scrollspy.js" type="text/javascript"></script>
+    <script src="/p6/public/js/scrollspy.js" type="text/javascript"></script>
 {% endblock %}

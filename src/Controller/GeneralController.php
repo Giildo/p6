@@ -7,19 +7,22 @@ use App\Entity\User;
 use DateTime;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route(name="general_")
+ * @Route("/p6", name="general_")
  * Class GeneralController
  * @package App\Controller
  */
 class GeneralController extends AppController
 {
     /**
+     * Récupère les figures via doctrine.
+     * Crée un tableau vide de jetons. Récupère l'utilisateur connecté dans la session.
+     * Utilise une méthode crypter un code pour faire un jeton.
+     *
      * @Route("/accueil", name="index")
      * @param RegistryInterface $doctrine
      * @param SessionInterface $session
@@ -34,7 +37,6 @@ class GeneralController extends AppController
             ->findAll();
 
         $tokens = [];
-
         if ($this->isContrib()) {
             /** @var User $user */
             $user = $session->get('user');
@@ -54,13 +56,5 @@ class GeneralController extends AppController
         }
 
         return $this->render('general/index.html.twig', compact('tricks', 'tokens'));
-    }
-
-    /**
-     * @Route("/", name="base")
-     */
-    public function base(): RedirectResponse
-    {
-        return new RedirectResponse('/accueil', RedirectResponse::HTTP_MOVED_PERMANENTLY);
     }
 }

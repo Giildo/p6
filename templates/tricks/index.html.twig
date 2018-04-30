@@ -3,7 +3,7 @@
 {% block title %}{{ parent() }} - Liste des Tricks{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="/css/admin/user.css" />
+    <link rel="stylesheet" href="/p6/public/css/admin/user.css" />
 {% endblock %}
 
 {% block body %}
@@ -14,7 +14,7 @@
 
     <div class="row">
         <div class="offset-sm-1 col-sm-10">
-            <a href="/trick/ajouter" class="btn btn-success">Nouvelle Trick</a>
+            <a href="/p6/trick/ajouter" class="btn btn-success">Nouvelle Trick</a>
         </div>
     </div>
 
@@ -37,10 +37,10 @@
                 {% for trick in tricks %}
                     <tr>
                         <td>
-                            <a href="/trick/{{ trick.category.name }}/{{ trick.name }}">{{ trick.name }}</a>
+                            <a href="/p6/trick/{{ trick.category.name }}/{{ trick.name }}">{{ trick.name }}</a>
                         </td>
                         <td>
-                            <a href="/trick/liste/categorie/{{ trick.category.name }}">{{ trick.category.name }}</a>
+                            <a href="/p6/trick/liste/categorie/{{ trick.category.name }}">{{ trick.category.name }}</a>
                         </td>
                         <td>
                             {% if trick.published == true %}
@@ -52,14 +52,14 @@
                         <td>{{ trick.createdAt | date('d-m-Y H:i') }}</td>
                         <td>{{ trick.updatedAt | date('d-m-Y H:i') }}</td>
                         <td>
-                            <a href="/trick/liste/auteur/{{ trick.user.pseudo }}">{{ trick.user.pseudo }}</a>
+                            <a href="/p6/trick/liste/auteur/{{ trick.user.pseudo }}">{{ trick.user.pseudo }}</a>
                         </td>
                         <td>
-                            <form method="post" action="/trick/modifier/{{ trick.id }}">
+                            <form method="post" action="/p6/trick/modifier/{{ trick.id }}">
                                 <input type="hidden" value="{{ tokens[trick.id] }}" name="token" />
                                 <button type="submit" class="btn btn-info">Modifier</button>
                             </form>
-                            <form method="post" action="/trick/supprimer/{{ trick.id }}">
+                            <form method="post" action="/p6/trick/supprimer/{{ trick.id }}">
                                 <input type="hidden" value="{{ tokens[trick.id] }}" name="token" />
                                 <button type="submit" class="btn btn-warning">Supprimer</button>
                             </form>
@@ -74,7 +74,7 @@
     {% if filtered == true %}
         <div class="row returnLink">
             <div class="offset-sm-1 col-sm-10">
-                <a href="/trick/liste"><- Retourner à la liste générale</a>
+                <a href="/p6/trick/liste"><- Retourner à la liste générale</a>
             </div>
         </div>
     {% endif %}

@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Status;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
@@ -20,6 +22,13 @@ abstract class AppController extends Controller
         $this->twig = $twig;
     }
 
+    /**
+     * Vérifie si l'utilisateur en Session est une instance de @uses User
+     * Vérifie le jeton associé dans la variable "time"
+     * Si tout est OK return true
+     *
+     * @return bool
+     */
     protected function isConnected(): bool
     {
         $session = new Session();
@@ -39,6 +48,12 @@ abstract class AppController extends Controller
         return true;
     }
 
+    /**
+     * Vérifie que l'utilisateur est connecté avec la méthode @uses AppController::isConnected(),
+     * puis vérifie que le dit utilisateur a au moins le @uses Status::$name "Contributeur"
+     *
+     * @return bool
+     */
     protected function isContrib(): bool
     {
         if ($this->isConnected()) {
@@ -53,6 +68,12 @@ abstract class AppController extends Controller
         }
     }
 
+    /**
+     * Vérifie que l'utilisateur est connecté avec la méthode @uses AppController::isConnected(),
+     * puis vérifie que le dit utilisateur a le @uses Status::$name "Administrateur"
+     *
+     * @return bool
+     */
     protected function isAdmin(): bool
     {
         if ($this->isConnected()) {
@@ -88,5 +109,43 @@ abstract class AppController extends Controller
         }
 
         return new Response($this->twig->render($view, $parameters));
+    }
+
+    /**
+     * Fonction qui redirige vers la page d'accueil
+     *
+     * @return RedirectResponse
+     */
+    protected function redirectToHome(): RedirectResponse
+    {
+        return $this->redirectToRoute('general_index', [], RedirectResponse::HTTP_MOVED_PERMANENTLY);
+    }
+
+    /**
+     * Fonction qui redirige l'utilisateur vers la bonne page d'erreur.
+     *
+     * @param int $errorNumber
+     * @param array|null $params
+     * @return RedirectResponse
+     */
+    protected function redirectToError(int $errorNumber, ?array $params = []): RedirectResponse
+    {
+        switch ($errorNumber) {
+            case 404:
+                return $this->redirectToRoute('error_404', $params, RedirectResponse::HTTP_NOT_FOUND);
+                break;
+
+            case 500:
+                return $this->redirectToRoute('error_500', $params, RedirectResponse::HTTP_INTERNAL_SERVER_ERROR);
+                break;
+
+            case 401:
+                return $this->redirectToRoute('error_401', $params, RedirectResponse::HTTP_UNAUTHORIZED);
+                break;
+
+            default:
+                return $this->redirectToRoute('error_404', $params, RedirectResponse::HTTP_NOT_FOUND);
+                break;
+        }
     }
 }

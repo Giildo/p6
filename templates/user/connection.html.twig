@@ -3,16 +3,16 @@
 {% block title %}{{ parent() }} - {{ pageTitle }}{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="/css/user/connection.css" />
+    <link rel="stylesheet" href="/p6/public/css/user/connection.css" />
 {% endblock %}
 
 {% block body %}
-    <h1 style="text-align: center;">{{ pageTitle }}</h1>
+    <h1>{{ pageTitle }}</h1>
 
     {% if pageType == 'connection' %}
         <div class="row">
             <div class="offset-sm-3 col-sm-6">
-                <a href="/enregistrement">Si vous n'avez pas encore de compte, enregistrez-vous</a>
+                <a href="/p6/enregistrement">Si vous n'avez pas encore de compte, enregistrez-vous</a>
             </div>
         </div>
     {% endif %}
