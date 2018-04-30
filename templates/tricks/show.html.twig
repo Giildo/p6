@@ -3,16 +3,15 @@
 {% block title %}{{ parent() }} - {{ trick.name }}{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="/css/tricks/show.css"/>
+    <link rel="stylesheet" href="/p6/public/css/tricks/show.css"/>
 {% endblock %}
 
 {% block body %}
-
     <div class="row">
         <div class="offset-sm-2 col-sm-8" id="trick">
             <header class="row">
                 <figure>
-                    <img src="/img/header.jpg" alt="Image d'un snowboarder" class="img-fluid"/>
+                    <img src="/p6/public/img/header.jpg" alt="Image d'un snowboarder" class="img-fluid"/>
                     <h1>{{ trick.category.name | capitalize }} - {{ trick.name }}</h1>
                 </figure>
             </header>
@@ -87,9 +86,9 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         {% if comment.user.picture is null %}
-                                            <img src="/img/pic_dl/users/avatar.jpg" alt="Logo" class="img-fluid"/>
+                                            <img src="/p6/public/img/pic_dl/users/avatar.jpg" alt="Logo" class="img-fluid"/>
                                         {% else %}
-                                            <img src="/img/pic_dl/users/{{ comment.user.picture.name }}.{{ comment.user.picture.ext }}"
+                                            <img src="/p6/public/img/pic_dl/users/{{ comment.user.picture.name }}.{{ comment.user.picture.ext }}"
                                                  alt="{{ comment.user.picture.alt }}" class="img-fluid"/>
                                         {% endif %}
                                     </div>
@@ -114,12 +113,13 @@
                                 {% if isContrib == true and tokens is not empty and tokens[comment.id] != null %}
                                     <div class="modifs">
                                         <form method="post"
-                                              action="/trick/{{ trick.category.name }}/{{ trick.slug }}/{{ comment.id }}">
-                                            <input type="hidden" value="{{ tokens[comment.id] }}" name="token" />
+                                              action="/p6/trick/{{ trick.category.name }}/{{ trick.slug }}/{{ comment.id }}">
+                                            <input type="hidden" value="{{ tokens[comment.id] }}" name="token"/>
                                             <button type="submit" class="material-icons">create</button>
                                         </form>
-                                        <form method="post" action="/trick/{{ trick.category.name }}/{{ trick.slug }}/{{ comment.id }}/del">
-                                            <input type="hidden" value="{{ tokens[comment.id] }}" name="token" />
+                                        <form method="post"
+                                              action="/p6/trick/{{ trick.category.name }}/{{ trick.slug }}/{{ comment.id }}/del">
+                                            <input type="hidden" value="{{ tokens[comment.id] }}" name="token"/>
                                             <button type="submit" class="material-icons">delete</button>
                                         </form>
                                     </div>

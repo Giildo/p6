@@ -4,27 +4,29 @@
     <meta charset="UTF-8">
     <title>{% block title %}SnowTricks{% endblock %}</title>
 
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width"/>
 
     <!--Boostrap 4-->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous"/>
 
     <!--GoogleFont-->
-    <link href="https://fonts.googleapis.com/css?family=Raleway|Russo+One" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Raleway|Russo+One" rel="stylesheet"/>
     <!--GoogleIcons-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 
-    <link rel="stylesheet" href="/css/style.css"/>
+    <link rel="stylesheet" href="/p6/public/css/style.css"/>
 
     {% block stylesheets %}{% endblock %}
 </head>
+
 <body>
 
 <div class="container-fluid">
 
     <nav class="navbar navbar-expand-md fixed-top navbar-light bg-light">
-        <a class="navbar-brand" href="/accueil">Snow<span class="bold">Tricks</span></a>
+        <a class="navbar-brand" href="/p6/accueil">Snow<span class="bold">Tricks</span></a>
+
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -33,22 +35,21 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link a_scrollspy" href="/accueil#top"><span class="material-icons">home</span></a>
+                    <a class="nav-link a_scrollspy" href="/p6/accueil#top"><span class="material-icons">home</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link a_scrollspy" href="/accueil#tricks">Tricks</a>
+                    <a class="nav-link a_scrollspy" href="/p6/accueil#tricks">Tricks</a>
                 </li>
 
                 {% if isContrib == true %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Admin
-                        </a>
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">Admin</a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="/trick/liste">Tricks</a>
+                            <a class="dropdown-item" href="/p6/trick/liste">Tricks</a>
                             {% if isAdmin == true %}
-                                <a class="dropdown-item" href="/admin/utilisateurs">Utilisateurs</a>
-                                <a class="dropdown-item" href="/admin/commentaires">Commentaires</a>
+                                <a class="dropdown-item" href="/p6/admin/utilisateurs">Utilisateurs</a>
+                                <a class="dropdown-item" href="/p6/admin/commentaires">Commentaires</a>
                             {% endif %}
                         </div>
                     </li>
@@ -56,16 +57,16 @@
 
                 {% if isConnected == false %}
                     <li class="nav-item">
-                        <a class="nav-link" href="/connexion">Connexion</a>
+                        <a class="nav-link" href="/p6/connexion">Connexion</a>
                     </li>
                 {% elseif isConnected == true %}
                     {% if userConnected is defined %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/profil/{{ userConnected.pseudo }}">Profil</a>
+                            <a class="nav-link" href="/p6/profil/{{ userConnected.pseudo }}">Profil</a>
                         </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link" href="/deconnexion">Déconnexion</a>
+                        <a class="nav-link" href="/p6/deconnexion">Déconnexion</a>
                     </li>
                 {% endif %}
             </ul>

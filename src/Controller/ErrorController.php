@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/erreur", name="error_")
+ * @Route("/p6/erreur", name="error_")
  * Class ErrorController
  * @package App\Controller
  */
@@ -19,7 +19,7 @@ class ErrorController extends AppController
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function e401()
+    public function e401(): Response
     {
         return $this->render('error/401.html.twig', []);
     }

@@ -3,7 +3,7 @@
 {% block title %}{{ parent() }} - Administration des commentaires{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="/css/admin/user.css" />
+    <link rel="stylesheet" href="/p6/public/css/admin/user.css" />
 {% endblock %}
 
 {% block body %}
@@ -27,18 +27,18 @@
                 {% for comment in comments %}
                     <tr>
                         <td>
-                            <a href="/admin/commentaires/utilisateur/{{ comment.user.pseudo }}">
+                            <a href="/p6/admin/commentaires/utilisateur/{{ comment.user.pseudo }}">
                                 {{ comment.user.pseudo }}
                             </a>
                         </td>
                         <td>
-                            <a href="/admin/commentaires/trick/{{ comment.trick.name }}">
+                            <a href="/p6/admin/commentaires/trick/{{ comment.trick.name }}">
                                 {{ comment.trick.name }}
                             </a>
                         </td>
                         <td>{{ comment.comment }}</td>
                         <td>
-                            <form method="post" action="/admin/commentaires/supprimer/{{ comment.id }}">
+                            <form method="post" action="/p6/admin/commentaires/supprimer/{{ comment.id }}">
                                 <input type="hidden" value="{{ tokens[comment.id] }}" name="token" />
                                 <button type="submit" class="btn btn-warning">Supprimer</button>
                             </form>
@@ -53,7 +53,7 @@
     {% if filtered == true %}
         <div class="row returnLink">
             <div class="offset-sm-1 col-sm-10">
-                <a href="/admin/commentaires"><- Retourner à la liste générale</a>
+                <a href="/p6/admin/commentaires"><- Retourner à la liste générale</a>
             </div>
         </div>
     {% endif %}

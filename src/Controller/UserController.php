@@ -21,7 +21,7 @@ use Twig\Environment;
 /**
  * Gère la connexion, l'enregistrement d'un nouvel utilisateur et la déconnexion.
  *
- * @Route(name="user_")
+ * @Route("/p6", name="user_")
  * Class UserController
  * @package App\Controller
  */
@@ -85,7 +85,7 @@ class UserController extends AppController
 
                 if (!is_null($userVerif)) {
                     $this->connectUser($userVerif);
-                    return new RedirectResponse('/accueil', RedirectResponse::HTTP_MOVED_PERMANENTLY);
+                    return $this->redirectToHome();
                 }
             }
 
@@ -95,7 +95,7 @@ class UserController extends AppController
                 'pageType'  => 'connection'
             ]);
         } else {
-            return new RedirectResponse('/accueil', RedirectResponse::HTTP_MOVED_PERMANENTLY);
+            return $this->redirectToHome();
         }
     }
 
@@ -140,7 +140,7 @@ class UserController extends AppController
                         'message',
                         'Après avoir validé votre adresse mail, veuillez vous connecter.'
                     );
-                    return new RedirectResponse('/connexion');
+                    return $this->redirectToRoute('user_connection');
                 }
             }
 
@@ -150,7 +150,7 @@ class UserController extends AppController
                 'pageType'  => 'registry'
             ]);
         } else {
-            return new RedirectResponse('/accueil', RedirectResponse::HTTP_MOVED_PERMANENTLY);
+            return $this->redirectToHome();
         }
     }
 
@@ -166,7 +166,7 @@ class UserController extends AppController
         $session->remove('user');
         $session->remove('time');
 
-        return new RedirectResponse('/accueil', RedirectResponse::HTTP_MOVED_PERMANENTLY);
+        return $this->redirectToHome();
     }
 
     /**
@@ -196,7 +196,7 @@ class UserController extends AppController
             }
             return $this->render('/admin/users.html.twig', compact('users', 'tokens'));
         } else {
-            return new RedirectResponse('/erreur/401');
+            return $this->redirectToHome();
         }
     }
 
@@ -229,17 +229,19 @@ class UserController extends AppController
                 $password = hash('sha512', $user->getPseudo());
                 $user->setPassword($password)
                     ->setMailValidate(false);
+
                 $manager = $this->doctrine->getManager();
                 $manager->persist($user);
                 $manager->flush();
-                return new RedirectResponse('/admin/utilisateurs');
+
+                return $this->redirectToRoute('user_admin_users');
             }
 
             return $this->render('/admin/modifyAdd_User.html.twig', [
                 'form' => $form->createView()
             ]);
         } else {
-            return new RedirectResponse('/erreur/401');
+            return $this->redirectToHome();
         }
     }
 
@@ -265,7 +267,7 @@ class UserController extends AppController
                 ->findOneBy(['pseudo' => $pseudo]);
 
             if (is_null($user)) {
-                return new RedirectResponse('/admin/utilisateurs');
+                return $this->redirectToRoute('user_admin_users');
             }
 
             $date = new DateTime();
@@ -275,7 +277,7 @@ class UserController extends AppController
             );
 
             if ($request->request->get('token') !== $token) {
-                return new RedirectResponse('/admin/utilisateurs');
+                return $this->redirectToRoute('user_admin_users');
             }
 
             $form = $this->createForm(UserType::class, $user);
@@ -296,7 +298,7 @@ class UserController extends AppController
                 'form' => $form->createView()
             ]);
         } else {
-            return new RedirectResponse('/erreur/401');
+            return $this->redirectToHome();
         }
     }
 
@@ -319,7 +321,7 @@ class UserController extends AppController
                 ->findOneBy(['pseudo' => $pseudo]);
 
             if (is_null($user)) {
-                return new RedirectResponse('/admin/utilisateurs');
+                return $this->redirectToRoute('user_admin_users');
             }
 
             $date = new DateTime();
@@ -329,16 +331,16 @@ class UserController extends AppController
             );
 
             if ($request->request->get('token') !== $token) {
-                return new RedirectResponse('/admin/utilisateurs');
+                return $this->redirectToRoute('user_admin_users');
             }
 
             $manager = $this->doctrine->getManager();
             $manager->remove($user);
             $manager->flush();
 
-            return new RedirectResponse('/admin/utilisateurs');
+            return $this->redirectToRoute('user_admin_users');
         } else {
-            return new RedirectResponse('/erreur/401');
+            return $this->redirectToHome();
         }
     }
 
@@ -360,10 +362,10 @@ class UserController extends AppController
             if (!is_null($user)) {
                 return $this->render('/user/profil_index.html.twig', compact('user'));
             } else {
-                return new RedirectResponse('/accueil');
+                return $this->redirectToHome();
             }
         } else {
-            return new RedirectResponse('/accueil');
+            return $this->redirectToHome();
         }
     }
 
@@ -441,11 +443,16 @@ class UserController extends AppController
                     //Prend en charge les modifications du profil et le charge en BDD
                     $form->handleRequest($request);
                     if ($form->isSubmitted() && $form->isValid()) {
+                        $password = hash('sha512', strlen($user->getPassword()) . $user->getPassword());
+                        $user->setPassword($password);
+
                         $manager = $this->doctrine->getManager();
                         $manager->persist($user);
                         $manager->flush();
 
-                        return new RedirectResponse('/profil/' . $user->getPseudo());
+                        return $this->redirectToRoute('user_profil_index', [
+                            'pseudo' => $user->getPseudo()
+                        ]);
                     }
 
                     //Crée un Token pour la suppression de l'image de profil
@@ -484,13 +491,13 @@ class UserController extends AppController
                         'picToken' => $picToken
                     ]);
                 } else {
-                    return new RedirectResponse('/accueil');
+                    return $this->redirectToHome();
                 }
             } else {
-                return new RedirectResponse('/accueil');
+                return $this->redirectToHome();
             }
         } else {
-            return new RedirectResponse('/accueil');
+            return $this->redirectToHome();
         }
     }
 

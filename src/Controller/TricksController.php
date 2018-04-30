@@ -10,18 +10,15 @@ use App\Form\TrickType;
 use App\Repository\TrickRepository;
 use DateTime;
 use Symfony\Bridge\Doctrine\RegistryInterface;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Date;
 use Twig\Environment;
 
 /**
- * @Route("/trick", name="tricks_")
+ * @Route("/p6/trick", name="tricks_")
  * Class TricksController
  * @package App\Controller
  */
@@ -39,6 +36,14 @@ class TricksController extends AppController
     }
 
     /**
+     * Page d'administration des figures pour les administrer plus simplement.
+     * Récupère les figures :
+     * - Toutes si l'adresse est simple
+     * - Filtré selon la catégorie ou l'auteur si filtré
+     * S'il n'y a pas de figures trouvées selon les critères de filtre, retourne à la page sans filtre.
+     * Crée un tableau de jetons pour la sécurité pour la modification et la suppression.
+     *
+     *
      * @Route("/liste/{category}/{options}",
      *     name="index",
      *     defaults={"category"=null, "options"=null},
@@ -54,6 +59,7 @@ class TricksController extends AppController
     {
         if ($this->isContrib()) {
             $filtered = false;
+            $tricks = null;
 
             if (is_null($options) && is_null($category)) {
                 $tricks = $this->doctrine->getRepository(Trick::class)
@@ -70,6 +76,10 @@ class TricksController extends AppController
                     $tricks = $trickRepository->findByCategory($options);
                     $category = 'Catégorie';
                 }
+            }
+
+            if (empty($tricks)) {
+                return $this->redirectToRoute('tricks_index');
             }
 
             /** @var Trick $trick */
@@ -90,11 +100,17 @@ class TricksController extends AppController
                 'tokens'
             ));
         } else {
-            return new RedirectResponse('/accueil');
+            return $this->redirectToRoute($this->generateUrl('general_index'));
         }
     }
 
     /**
+     * Permet de modifier une figure.
+     * Récupère la figure à modifier, si elle n'existe pas retourne vers la liste des figures.
+     * Crée un jeton de vérification et me compare à celui reçu en POST.
+     * Si tout est OK, crée un formulaire de type @uses TrickType. Il attache le formulaire à la requête reçue par la
+     * méthode, et si tout est OK modifie la figure en BDD et renvoie l'utilisateur vers la liste des figures.
+     *
      * @Route("/modifier/{id}", name="modify", requirements={"id"="\d+"})
      * @param Request $request
      * @param int $id
@@ -111,7 +127,7 @@ class TricksController extends AppController
                 ->find($id);
 
             if (is_null($trick)) {
-                return new RedirectResponse('/trick/liste');
+                return $this->redirectToRoute('tricks_index');
             }
 
             $date = new DateTime();
@@ -121,7 +137,7 @@ class TricksController extends AppController
             );
 
             if ($tokenVerif !== $request->request->get('token')) {
-                return new RedirectResponse('/trick/liste');
+                return $this->redirectToRoute('tricks_index');
             }
 
             $form = $this->createForm(TrickType::class, $trick);
@@ -136,14 +152,14 @@ class TricksController extends AppController
 
                 $manager = $this->doctrine->getManager();
                 $manager->flush();
-                return new RedirectResponse('/trick/liste');
+                return $this->redirectToRoute('tricks_index');
             }
 
             return $this->render('/tricks/add.html.twig', [
                 'form' => $form->createView()
             ]);
         } else {
-            return new RedirectResponse('/accueil');
+            return $this->redirectToHome();
         }
     }
 
@@ -153,14 +169,14 @@ class TricksController extends AppController
      * @param int $id
      * @return RedirectResponse
      */
-    public function delete(Request $request, int $id)
+    public function delete(Request $request, int $id): RedirectResponse
     {
         if ($this->isContrib()) {
             $trick = $this->doctrine->getRepository(Trick::class)
                 ->find($id);
 
             if (is_null($trick)) {
-                return new RedirectResponse('/trick/liste');
+                return $this->redirectToRoute('tricks_index');
             }
 
             $date = new DateTime();
@@ -169,17 +185,15 @@ class TricksController extends AppController
                 $trick->getId() . $date->format('d') . $trick->getName() . $date->format('m')
             );
 
-            if ($tokenVerif !== $request->request->get('token')) {
-                return new RedirectResponse('/trick/liste');
+            if ($tokenVerif === $request->request->get('token')) {
+                $manager = $this->doctrine->getManager();
+                $manager->remove($trick);
+                $manager->flush();
             }
 
-            $manager = $this->doctrine->getManager();
-            $manager->remove($trick);
-            $manager->flush();
-
-            return new RedirectResponse('/trick/liste');
+            return $this->redirectToRoute('tricks_index');
         } else {
-            return new RedirectResponse('/accueil');
+            return $this->redirectToHome();
         }
     }
 
@@ -202,26 +216,29 @@ class TricksController extends AppController
     public function show(Request $request, SessionInterface $session, string $slug, string $category, ?string $action = null, ?int $id = null)
     {
         /** @var Trick $trick */
-        $trick = $this->doctrine
-            ->getRepository(Trick::class)
+        $trick = $this->doctrine->getRepository(Trick::class)
             ->findOneBy(["slug" => $slug]);
 
         if (!is_null($trick) && $trick->getCategory()->getName() === $category) {
+            $date = new DateTime();
+
             if (!is_null($id)) {
                 $comment = $this->doctrine->getRepository(Comment::class)
                     ->find($id);
 
-                $date = new DateTime();
                 $tokenVerif = hash(
                     'sha512',
                     $comment->getId() . $date->format('d') . $comment->getComment()
                 );
-                $token = $request->request->get('token');
 
+                $token = $request->request->get('token');
                 $requestPost = $request->request->get('comment');
-                var_dump(!isset($requestPost));
+
                 if (is_null($comment) || ($tokenVerif !== $token && !isset($requestPost))) {
-                    return new RedirectResponse("/trick/{$trick->getCategory()->getName()}/{$trick->getSlug()}");
+                    return $this->redirectToRoute('tricks_show', [
+                        'category' => $trick->getCategory()->getName(),
+                        'slug'     => $trick->getSlug()
+                    ]);
                 }
 
                 if ($action === 'del') {
@@ -229,25 +246,28 @@ class TricksController extends AppController
                     $manager->remove($comment);
                     $manager->flush();
 
-                    return new RedirectResponse("/trick/{$trick->getCategory()->getName()}/{$trick->getSlug()}");
+                    return $this->redirectToRoute('tricks_show', [
+                        'category' => $trick->getCategory()->getName(),
+                        'slug'     => $trick->getSlug()
+                    ]);
                 }
             } else {
                 $comment = new Comment();
             }
-            $form = $this->createForm(CommentType::class, $comment);
 
+            $form = $this->createForm(CommentType::class, $comment);
             $form->remove('createdAt')
                 ->remove('updatedAt')
                 ->remove('trick')
                 ->remove('user');
 
+            /** @var User $userIndentify */
+            $userIndentify = $session->get('user');
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
-                $date = new DateTime();
-
                 /** @var User $user */
                 $user = $this->doctrine->getRepository(User::class)
-                    ->find($session->get('user')->getId());
+                    ->find($userIndentify->getId());
 
                 if (is_null($id)) {
                     $comment->setCreatedAt($date)
@@ -262,22 +282,23 @@ class TricksController extends AppController
                 $manager->persist($comment);
                 $manager->flush();
 
-                //return new RedirectResponse("/trick/{$trick->getCategory()->getName()}/{$trick->getSlug()}");
+                return $this->redirectToRoute('tricks_show', [
+                    'category' => $trick->getCategory()->getName(),
+                    'slug'     => $trick->getSlug()
+                ]);
             }
 
-            $comments = $this->doctrine
-                ->getRepository(Comment::class)
+            $comments = $this->doctrine->getRepository(Comment::class)
                 ->findBy(['trick' => $trick], ['updatedAt' => 'desc']);
 
             /** @var Comment $comment */
             $tokens = [];
-            $userIndentify = $session->get('user');
             if (!is_null($userIndentify)) {
-                $date = new DateTime();
                 foreach ($comments as $comment) {
                     $tokens[$comment->getId()] = ($comment->getUser()->getId() === $userIndentify->getId()) ?
-                        hash('sha512', $comment->getId() . $date->format('d') . $comment->getComment()) :
-                        null;
+                        hash('sha512',
+                            $comment->getId() . $date->format('d') . $comment->getComment()
+                        ) : null;
                 }
             }
 
@@ -288,7 +309,7 @@ class TricksController extends AppController
                 'tokens'   => $tokens
             ]);
         } else {
-            return new RedirectResponse('/accueil', RedirectResponse::HTTP_FOUND);
+            return $this->redirectToHome();
         }
     }
 
@@ -328,14 +349,14 @@ class TricksController extends AppController
                 $manager->persist($trick);
                 $manager->flush();
 
-                return new RedirectResponse('/accueil');
+                return $this->redirectToHome();
             }
 
             return $this->render('/tricks/add.html.twig', [
                 'form' => $form->createView()
             ]);
         } else {
-            return new RedirectResponse('/accueil');
+            return $this->redirectToHome();
         }
     }
 }

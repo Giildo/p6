@@ -3,15 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Repository\CommentRepository;
 use DateTime;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
 
 /**
- * @Route(name="comment_")
+ * @Route("/p6", name="comment_")
  * Class CommentController
  * @package App\Controller
  */
@@ -34,10 +36,9 @@ class CommentController extends AppController
      *     defaults={"category"=null,"value"=null},
      *     requirements={"category"="utilisateur|trick", "value"="\w+"}
      * )
-     * @param RegistryInterface $doctrine
      * @param null|string $category
      * @param null|string $value
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return RedirectResponse|Response
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
@@ -48,12 +49,14 @@ class CommentController extends AppController
             $filtered = false;
             $comments = [];
             if (!is_null($category) && !is_null($value)) {
+
+                /** @var CommentRepository $commentRepository */
+                $commentRepository = $this->doctrine->getRepository(Comment::class);
+
                 if ($category === 'utilisateur') {
-                    $comments = $this->doctrine->getRepository(Comment::class)
-                        ->findByUser($value);
+                    $comments = $commentRepository->findByUser($value);
                 } elseif ($category === 'trick'){
-                    $comments = $this->doctrine->getRepository(Comment::class)
-                        ->findByTrick($value);
+                    $comments = $commentRepository->findByTrick($value);
                 }
 
                 $filtered = true;
@@ -80,7 +83,7 @@ class CommentController extends AppController
                 'tokens'
             ));
         } else {
-            return new RedirectResponse('/accueil');
+            return $this->redirectToHome();
         }
     }
 
@@ -90,7 +93,7 @@ class CommentController extends AppController
      * @param int $id
      * @return RedirectResponse
      */
-    public function delete(Request $request, int $id)
+    public function delete(Request $request, int $id): RedirectResponse
     {
         if ($this->isAdmin()) {
             $comment = $this->doctrine->getRepository(Comment::class)
@@ -109,15 +112,13 @@ class CommentController extends AppController
                     $manager = $this->doctrine->getManager();
                     $manager->remove($comment);
                     $manager->flush();
-
-                    return new RedirectResponse('/admin/commentaires');
                 }
             }
 
-            return new RedirectResponse('/admin/commentaires');
+            return $this->redirectToRoute('comment_admin_index');
 
         } else {
-            return new RedirectResponse('/admin/commentaires');
+            return $this->redirectToHome();
         }
     }
 }

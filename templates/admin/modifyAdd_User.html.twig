@@ -1,9 +1,9 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}{{ parent() }} - Administration des utilisateurs{% endblock %}
+{% block title %}{{ parent() }} - {{ user.pseudo | default('Ajouter un nouvel utilisateur')}}{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="/css/admin/user.css" />
+    <link rel="stylesheet" href="/p6/public/css/admin/user.css" />
 {% endblock %}
 
 {% block body %}

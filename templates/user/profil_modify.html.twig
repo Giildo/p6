@@ -3,7 +3,7 @@
 {% block title %}{{ parent() }} - {{ user.pseudo }}{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="/css/user/profil.css"/>
+    <link rel="stylesheet" href="/p6/public/css/user/profil.css"/>
 {% endblock %}
 
 {% block body %}
@@ -13,14 +13,14 @@
         <div class="offset-sm-1 col-sm-3">
             <h3>Image de profil :</h3>
             {% if user.picture is not null %}
-                <img src="/img/pic_dl/users/{{ user.picture.name }}.{{ user.picture.ext }}" alt="{{ user.picture.alt }}"
+                <img src="/p6/public/img/pic_dl/users/{{ user.picture.name }}.{{ user.picture.ext }}" alt="{{ user.picture.alt }}"
                      class="img-fluid"/>
                 <form method="post" name="picture">
                     <input type="hidden" name="picture[delete]" value="{{ picToken }}" />
                     <button type="submit" class="material-icons">close</button>
                 </form>
             {% else %}
-                <img src="/img/pic_dl/users/avatar.jpg" alt="Photo de profil par défaut" />
+                <img src="/p6/public/img/pic_dl/users/avatar.jpg" alt="Photo de profil par défaut" />
             {% endif %}
         </div>
         <div class="col-sm-7">
@@ -38,7 +38,7 @@
 
     <div class="row">
         <div class="offset-sm-1 col-sm-10">
-            <a href="/profil/{{ user.pseudo }}">< Retourner à l'affichage du profil</a>
+            <a href="/p6/profil/{{ user.pseudo }}">< Retourner à l'affichage du profil</a>
         </div>
     </div>
 {% endblock %}
