@@ -65,6 +65,8 @@ body {
         }
 
         .bubble_containing {
+          position: relative;
+
           .row {
             margin: 15px 0 15px 15px;
 
@@ -95,6 +97,22 @@ body {
                   font-size: 1.05rem;
                   font-weight: bold;
                 }
+              }
+            }
+          }
+
+          .modifs {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+
+            form {
+              display: inline-block;
+
+              button {
+                background: none;
+                border: none;
+                cursor: pointer;
               }
             }
           }

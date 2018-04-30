@@ -59,18 +59,22 @@ body #comments #comments_block .comment .avatar_containing .row img {
   border-radius: 50%;
   border: 1px solid black;
 }
-/* line 68, ../../../sass/tricks/show.scss */
+/* line 67, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment .bubble_containing {
+  position: relative;
+}
+/* line 70, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .row {
   margin: 15px 0 15px 15px;
 }
-/* line 71, ../../../sass/tricks/show.scss */
+/* line 73, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .row .bubble {
   position: relative;
   background: #dddddd;
   border-radius: 10px;
   padding: 15px;
 }
-/* line 77, ../../../sass/tricks/show.scss */
+/* line 79, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .row .bubble::before {
   content: '';
   position: absolute;
@@ -82,23 +86,39 @@ body #comments #comments_block .comment .bubble_containing .row .bubble::before 
   border-right: 25px solid #dddddd;
   border-bottom: 10px solid transparent;
 }
-/* line 91, ../../../sass/tricks/show.scss */
+/* line 93, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .row .bubble h3 {
   font-size: 1rem;
 }
-/* line 94, ../../../sass/tricks/show.scss */
+/* line 96, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .row .bubble h3 span {
   font-size: 1.05rem;
   font-weight: bold;
 }
+/* line 104, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment .bubble_containing .modifs {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+}
+/* line 109, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment .bubble_containing .modifs form {
+  display: inline-block;
+}
+/* line 112, ../../../sass/tricks/show.scss */
+body #comments #comments_block .comment .bubble_containing .modifs form button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 
-/* line 107, ../../../sass/tricks/show.scss */
+/* line 125, ../../../sass/tricks/show.scss */
 h2 {
   text-align: center;
   padding: 20px 0;
   font-family: "Russo One", sans-serif;
 }
-/* line 112, ../../../sass/tricks/show.scss */
+/* line 130, ../../../sass/tricks/show.scss */
 h2::after {
   content: '';
   width: 90%;

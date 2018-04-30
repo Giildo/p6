@@ -3,7 +3,7 @@
 {% block title %}{{ parent() }} - {{ trick.name }}{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="/css/tricks/show.css" />
+    <link rel="stylesheet" href="/css/tricks/show.css"/>
 {% endblock %}
 
 {% block body %}
@@ -12,7 +12,7 @@
         <div class="offset-sm-2 col-sm-8" id="trick">
             <header class="row">
                 <figure>
-                    <img src="/img/header.jpg" alt="Image d'un snowboarder" class="img-fluid" />
+                    <img src="/img/header.jpg" alt="Image d'un snowboarder" class="img-fluid"/>
                     <h1>{{ trick.category.name | capitalize }} - {{ trick.name }}</h1>
                 </figure>
             </header>
@@ -75,10 +75,9 @@
                 <h2 class="col-sm-12">Espace de discussion</h2>
             </div>
 
-            {{ form_start(form) }}
-            {{ form_widget(form) }}
-            <input type="submit" value="Valider" class="btn btn-success" />
-            {{ form_end(form) }}
+            {% if isConnected == true %}
+                {{ form(form) }}
+            {% endif %}
 
             {% if comments is defined %}
                 {% for comment in comments %}
@@ -87,18 +86,44 @@
                             <div class="col-sm-1 avatar_containing">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <img src="/img/users/avatar.jpg" alt="Logo" class="img-fluid" />
+                                        {% if comment.user.picture is null %}
+                                            <img src="/img/pic_dl/users/avatar.jpg" alt="Logo" class="img-fluid"/>
+                                        {% else %}
+                                            <img src="/img/pic_dl/users/{{ comment.user.picture.name }}.{{ comment.user.picture.ext }}"
+                                                 alt="{{ comment.user.picture.alt }}" class="img-fluid"/>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
                             <div class="col-sm-11 bubble_containing">
                                 <div class="row">
                                     <div class="col-sm-12 bubble">
-                                        <h3><span>Commentaire de {{ comment.user.pseudo }}</span>, posté le {{ comment.updatedAt | date('d-m-Y H:m') }}</h3>
-                                        <br />
+                                        <h3>
+                                            <span>Commentaire de {{ comment.user.pseudo }}</span>,
+                                            {% if comment.updatedAt == comment.createdAt %}
+                                                posté
+                                            {% else %}
+                                                modifié
+                                            {% endif %}
+                                            le {{ comment.updatedAt | date('d-m-Y H:i') }}
+                                        </h3>
+                                        <br/>
                                         <p>{{ comment.comment }}</p>
                                     </div>
                                 </div>
+                                {% if isContrib == true and tokens is not empty and tokens[comment.id] != null %}
+                                    <div class="modifs">
+                                        <form method="post"
+                                              action="/trick/{{ trick.category.name }}/{{ trick.slug }}/{{ comment.id }}">
+                                            <input type="hidden" value="{{ tokens[comment.id] }}" name="token" />
+                                            <button type="submit" class="material-icons">create</button>
+                                        </form>
+                                        <form method="post" action="/trick/{{ trick.category.name }}/{{ trick.slug }}/{{ comment.id }}/del">
+                                            <input type="hidden" value="{{ tokens[comment.id] }}" name="token" />
+                                            <button type="submit" class="material-icons">delete</button>
+                                        </form>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
