@@ -1,0 +1,60 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ parent() }} - Administration des commentaires{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/css/admin/user.css" />
+{% endblock %}
+
+{% block body %}
+    <h1>Gestion des commentaires</h1>
+
+    {% if filtered ==true %}<h2>{{ category }} : {{ value }}</h2>{% endif %}
+
+    <div class="row">
+        <div class="offset-sm-1 col-sm-10">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Trick</th>
+                    <th>Commentaire</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for comment in comments %}
+                    <tr>
+                        <td>
+                            <a href="/admin/commentaires/utilisateur/{{ comment.user.pseudo }}">
+                                {{ comment.user.pseudo }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="/admin/commentaires/trick/{{ comment.trick.name }}">
+                                {{ comment.trick.name }}
+                            </a>
+                        </td>
+                        <td>{{ comment.comment }}</td>
+                        <td>
+                            <form method="post" action="/admin/commentaires/supprimer/{{ comment.id }}">
+                                <input type="hidden" value="{{ tokens[comment.id] }}" name="token" />
+                                <button type="submit" class="btn btn-warning">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if filtered == true %}
+        <div class="row returnLink">
+            <div class="offset-sm-1 col-sm-10">
+                <a href="/admin/commentaires"><- Retourner à la liste générale</a>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
