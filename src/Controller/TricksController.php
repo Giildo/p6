@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Date;
 use Twig\Environment;
 
 /**
@@ -152,7 +153,8 @@ class TricksController extends AppController
      * @param int $id
      * @return RedirectResponse
      */
-    public function delete(Request $request, int $id) {
+    public function delete(Request $request, int $id)
+    {
         if ($this->isContrib()) {
             $trick = $this->doctrine->getRepository(Trick::class)
                 ->find($id);
@@ -182,17 +184,22 @@ class TricksController extends AppController
     }
 
     /**
-     * @Route("/{category}/{slug}", name="show", requirements={"category"="\w+", "slug"="\w+"})
+     * @Route("/{category}/{slug}/{id}/{action}",
+     *     name="show",
+     *     defaults={"action"=null, "id"=null},
+     *     requirements={"category"="\w+", "slug"="\w+", "id"="\d+", "action"="del"})
      * @param Request $request
      * @param SessionInterface $session
      * @param string $slug
      * @param string $category
+     * @param null|string $action
+     * @param int $id
      * @return Response|RedirectResponse
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function show(Request $request, SessionInterface $session, string $slug, string $category)
+    public function show(Request $request, SessionInterface $session, string $slug, string $category, ?string $action = null, ?int $id = null)
     {
         /** @var Trick $trick */
         $trick = $this->doctrine
@@ -200,7 +207,33 @@ class TricksController extends AppController
             ->findOneBy(["slug" => $slug]);
 
         if (!is_null($trick) && $trick->getCategory()->getName() === $category) {
-            $comment = new Comment();
+            if (!is_null($id)) {
+                $comment = $this->doctrine->getRepository(Comment::class)
+                    ->find($id);
+
+                $date = new DateTime();
+                $tokenVerif = hash(
+                    'sha512',
+                    $comment->getId() . $date->format('d') . $comment->getComment()
+                );
+                $token = $request->request->get('token');
+
+                $requestPost = $request->request->get('comment');
+                var_dump(!isset($requestPost));
+                if (is_null($comment) || ($tokenVerif !== $token && !isset($requestPost))) {
+                    return new RedirectResponse("/trick/{$trick->getCategory()->getName()}/{$trick->getSlug()}");
+                }
+
+                if ($action === 'del') {
+                    $manager = $this->doctrine->getManager();
+                    $manager->remove($comment);
+                    $manager->flush();
+
+                    return new RedirectResponse("/trick/{$trick->getCategory()->getName()}/{$trick->getSlug()}");
+                }
+            } else {
+                $comment = new Comment();
+            }
             $form = $this->createForm(CommentType::class, $comment);
 
             $form->remove('createdAt')
@@ -216,26 +249,43 @@ class TricksController extends AppController
                 $user = $this->doctrine->getRepository(User::class)
                     ->find($session->get('user')->getId());
 
-                $comment->setCreatedAt($date)
-                    ->setUpdatedAt($date)
-                    ->setUser($user)
-                    ->setTrick($trick);
+                if (is_null($id)) {
+                    $comment->setCreatedAt($date)
+                        ->setUpdatedAt($date)
+                        ->setUser($user)
+                        ->setTrick($trick);
+                } else {
+                    $comment->setUpdatedAt($date);
+                }
 
                 $manager = $this->doctrine->getManager();
                 $manager->persist($comment);
                 $manager->flush();
 
-                return new RedirectResponse('/trick/' . $trick->getCategory()->getName() . '/' . $trick->getName());
+                //return new RedirectResponse("/trick/{$trick->getCategory()->getName()}/{$trick->getSlug()}");
             }
 
             $comments = $this->doctrine
                 ->getRepository(Comment::class)
                 ->findBy(['trick' => $trick], ['updatedAt' => 'desc']);
 
+            /** @var Comment $comment */
+            $tokens = [];
+            $userIndentify = $session->get('user');
+            if (!is_null($userIndentify)) {
+                $date = new DateTime();
+                foreach ($comments as $comment) {
+                    $tokens[$comment->getId()] = ($comment->getUser()->getId() === $userIndentify->getId()) ?
+                        hash('sha512', $comment->getId() . $date->format('d') . $comment->getComment()) :
+                        null;
+                }
+            }
+
             return $this->render('tricks/show.html.twig', [
                 'trick'    => $trick,
                 'comments' => $comments,
-                'form'     => $form->createView()
+                'form'     => $form->createView(),
+                'tokens'   => $tokens
             ]);
         } else {
             return new RedirectResponse('/accueil', RedirectResponse::HTTP_FOUND);

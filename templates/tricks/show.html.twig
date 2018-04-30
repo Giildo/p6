@@ -105,12 +105,25 @@
                                             {% else %}
                                                 modifié
                                             {% endif %}
-                                            le {{ comment.updatedAt | date('d-m-Y H:m') }}
+                                            le {{ comment.updatedAt | date('d-m-Y H:i') }}
                                         </h3>
                                         <br/>
                                         <p>{{ comment.comment }}</p>
                                     </div>
                                 </div>
+                                {% if isContrib == true and tokens is not empty and tokens[comment.id] != null %}
+                                    <div class="modifs">
+                                        <form method="post"
+                                              action="/trick/{{ trick.category.name }}/{{ trick.slug }}/{{ comment.id }}">
+                                            <input type="hidden" value="{{ tokens[comment.id] }}" name="token" />
+                                            <button type="submit" class="material-icons">create</button>
+                                        </form>
+                                        <form method="post" action="/trick/{{ trick.category.name }}/{{ trick.slug }}/{{ comment.id }}/del">
+                                            <input type="hidden" value="{{ tokens[comment.id] }}" name="token" />
+                                            <button type="submit" class="material-icons">delete</button>
+                                        </form>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
