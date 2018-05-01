@@ -136,7 +136,7 @@ class TricksController extends AppController
                 $trick->getId() . $date->format('d') . $trick->getName() . $date->format('m')
             );
 
-            if ($tokenVerif !== $request->request->get('token')) {
+            if ($tokenVerif !== $request->request->get('token') && is_null($request->request->get('trick'))) {
                 return $this->redirectToRoute('tricks_index');
             }
 
@@ -151,6 +151,7 @@ class TricksController extends AppController
                 $trick->setUpdatedAt(new DateTime());
 
                 $manager = $this->doctrine->getManager();
+                $manager->persist($trick);
                 $manager->flush();
                 return $this->redirectToRoute('tricks_index');
             }

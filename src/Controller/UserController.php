@@ -284,7 +284,7 @@ class UserController extends AppController
                 $user->getPseudo() . $date->format('m') . $user->getLastName() . $date->format('d')
             );
 
-            if ($request->request->get('token') !== $token) {
+            if ($request->request->get('token') !== $token && is_null($request->request->get('user'))) {
                 return $this->redirectToRoute('user_admin_users');
             }
 
@@ -298,7 +298,10 @@ class UserController extends AppController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $manager = $this->doctrine->getManager();
+                $manager->persist($user);
                 $manager->flush();
+
+                return $this->redirectToRoute('user_admin_users');
             }
 
             return $this->render('/admin/modifyAdd_User.html.twig', [

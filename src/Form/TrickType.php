@@ -21,7 +21,7 @@ class TrickType extends AbstractType
             ->add('name', TextType::class, ['label' => 'Nom'])
             ->add('slug')
             ->add('description')
-            ->add('published', CheckboxType::class, ['label' => 'Publier'])
+            ->add('published', CheckboxType::class, ['label' => 'Publier', 'required' => false])
             ->add('createdAt')
             ->add('updatedAt')
             ->add('category', EntityType::class, ['class' => Category::class, 'choice_label' => 'name'])
