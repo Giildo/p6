@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Message;
+use App\Form\ContactType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -14,13 +17,52 @@ class ErrorController extends AppController
 {
     /**
      * @Route("/401", name="401")
+     * @param Request $request
      * @return Response
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function e401(): Response
+    public function e401(Request $request): Response
     {
-        return $this->render('error/401.html.twig', []);
+        $message = new Message();
+        $form = $this->createForm(ContactType::class, $message);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            mail('giildo.jm@gmail.com',
+                $message->getSubject(),
+                $message->getMessage()
+            );
+        }
+
+        return $this->render('bundles/TwigBundle/Exception/error401.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/500", name="500")
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function e500(): Response
+    {
+        return $this->render('error/500.html.twig', []);
+    }
+
+    /**
+     * @Route("/404", name="404")
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function e404(): Response
+    {
+        return $this->render('error/404.html.twig', []);
     }
 }

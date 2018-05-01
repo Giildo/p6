@@ -204,7 +204,7 @@ class UserController extends AppController
             }
             return $this->render('/admin/users.html.twig', compact('users', 'tokens'));
         } else {
-            return $this->redirectToHome();
+            return $this->redirectToRoute('error_401', []);
         }
     }
 

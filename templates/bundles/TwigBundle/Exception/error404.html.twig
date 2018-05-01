@@ -1,0 +1,17 @@
+{% extends 'bundles/TwigBundle/Exception/error.html.twig' %}
+
+{% block errorCode %}404{% endblock %}
+
+{% block errorTitle %}La page demandée n'a pas été trouvée !{% endblock %}
+
+{% block errorBody %}
+    <h2>Quelques liens pour vous orienter :</h2>
+    <ul>
+        <li><a href="/p6/accueil">Accueil</a></li>
+        <li><a href="/p6/accueil#tricks">Tricks</a></li>
+    </ul>
+{% endblock %}
+
+{% block errorImg %}
+    <img src="/p6/public/img/sorry.jpg" alt="Image montrant un post-it où il est écrit sorry" />
+{% endblock %}

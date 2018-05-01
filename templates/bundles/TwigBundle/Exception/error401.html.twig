@@ -1,0 +1,18 @@
+{% extends 'bundles/TwigBundle/Exception/error.html.twig' %}
+
+{% block errorCode %}401{% endblock %}
+
+{% block errorTitle %}La page demandée n'est pas autorisée.{% endblock %}
+
+{% block errorBody %}
+    <p>Pour accéder à cette page vous devez être connecté ou administrateur.</p>
+    <p>Si vous n'êtes pas connecté, rejoignez cette <a href="/p6/connexion">page</a>.</p>
+    <p>Si vous devez changer de status, contactez un administrateur :</p>
+
+     {{ form(form) }}
+{% endblock %}
+
+{% block errorImg %}
+    <img src="/p6/public/img/error.gif"
+         alt="Image montrant un personnage blanc dans un rond barré symbolisant une erreur"/>
+{% endblock %}
