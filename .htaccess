@@ -1,5 +1,7 @@
 RewriteEngine On
 
+ErrorDocument 500 http://www.jojotique.fr/p6/error/500
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RedirectMatch 301 ^\/p6\/$ /p6/accueil
 RewriteRule ^(.*)$ public/index.php [QSA,L]

@@ -1,0 +1,16 @@
+{% extends 'bundles/TwigBundle/Exception/error.html.twig' %}
+
+{% block errorCode %}500{% endblock %}
+
+{% block errorTitle %}Une erreur serveur est survenue.{% endblock %}
+
+{% block errorBody %}
+    <p>Pour résoudre le problème, contactez un administrateur :</p>
+
+    {{ form(form) }}
+{% endblock %}
+
+{% block errorImg %}
+    <img src="/p6/public/img/error.gif"
+         alt="Image montrant un personnage blanc dans un rond barré symbolisant une erreur"/>
+{% endblock %}

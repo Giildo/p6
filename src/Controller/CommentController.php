@@ -83,7 +83,7 @@ class CommentController extends AppController
                 'tokens'
             ));
         } else {
-            return $this->redirectToHome();
+            return $this->redirectToError(401);
         }
     }
 
@@ -116,9 +116,8 @@ class CommentController extends AppController
             }
 
             return $this->redirectToRoute('comment_admin_index');
-
         } else {
-            return $this->redirectToHome();
+            return $this->redirectToError(401);
         }
     }
 }

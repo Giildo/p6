@@ -1,0 +1,21 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ parent() }} - Erreur {% block errorCode %}{% endblock %}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/p6/public/css/error/error.css" />
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <h1 class="col-sm-12">{% block errorTitle %}{% endblock %}</h1>
+
+        <div class="offset-sm-1 col-sm-6 errorBody">
+            {% block errorBody %}{% endblock %}
+        </div>
+
+        <div class="col-sm-5 errorImg">
+            {% block errorImg %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}
