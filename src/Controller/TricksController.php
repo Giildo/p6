@@ -100,7 +100,7 @@ class TricksController extends AppController
                 'tokens'
             ));
         } else {
-            return $this->redirectToRoute($this->generateUrl('general_index'));
+            return $this->redirectToError(401);
         }
     }
 
@@ -159,7 +159,7 @@ class TricksController extends AppController
                 'form' => $form->createView()
             ]);
         } else {
-            return $this->redirectToHome();
+            return $this->redirectToError(401);
         }
     }
 
@@ -193,7 +193,7 @@ class TricksController extends AppController
 
             return $this->redirectToRoute('tricks_index');
         } else {
-            return $this->redirectToHome();
+            return $this->redirectToError(401);
         }
     }
 
@@ -356,7 +356,7 @@ class TricksController extends AppController
                 'form' => $form->createView()
             ]);
         } else {
-            return $this->redirectToHome();
+            return $this->redirectToError(401);
         }
     }
 }

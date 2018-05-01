@@ -204,7 +204,7 @@ class UserController extends AppController
             }
             return $this->render('/admin/users.html.twig', compact('users', 'tokens'));
         } else {
-            return $this->redirectToRoute('error_401', []);
+            return $this->redirectToError(401);
         }
     }
 
@@ -249,7 +249,7 @@ class UserController extends AppController
                 'form' => $form->createView()
             ]);
         } else {
-            return $this->redirectToHome();
+            return $this->redirectToError(401);
         }
     }
 
@@ -306,7 +306,7 @@ class UserController extends AppController
                 'form' => $form->createView()
             ]);
         } else {
-            return $this->redirectToHome();
+            return $this->redirectToError(401);
         }
     }
 
@@ -348,7 +348,7 @@ class UserController extends AppController
 
             return $this->redirectToRoute('user_admin_users');
         } else {
-            return $this->redirectToHome();
+            return $this->redirectToError(401);
         }
     }
 
@@ -373,7 +373,7 @@ class UserController extends AppController
                 return $this->redirectToHome();
             }
         } else {
-            return $this->redirectToHome();
+            return $this->redirectToError(401);
         }
     }
 
@@ -505,7 +505,7 @@ class UserController extends AppController
                 return $this->redirectToHome();
             }
         } else {
-            return $this->redirectToHome();
+            return $this->redirectToError(401);
         }
     }
 
