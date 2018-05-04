@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Date;
 use Twig\Environment;
 
 /**
@@ -76,7 +77,8 @@ class UserController extends AppController
                 ->remove('mail')
                 ->remove('phone')
                 ->remove('mailValidate')
-                ->remove('status');
+                ->remove('status')
+                ->remove('picture');
 
             $form->handleRequest($request);
 
@@ -129,7 +131,8 @@ class UserController extends AppController
 
             $form = $this->createForm(UserType::class, $user)
                 ->remove('mailValidate')
-                ->remove('status');
+                ->remove('status')
+                ->remove('picture');
 
             $form->handleRequest($request);
 
@@ -229,7 +232,8 @@ class UserController extends AppController
 
             $form = $this->createForm(UserType::class, $user);
             $form->remove('password')
-                ->remove('mailValidate');
+                ->remove('mailValidate')
+                ->remove('picture');
 
             $form->handleRequest($request);
 
@@ -292,7 +296,8 @@ class UserController extends AppController
             $form->remove('password')
                 ->add('password', HiddenType::class)
                 ->remove('mailValidate')
-                ->add('mailValidate', HiddenType::class);
+                ->add('mailValidate', HiddenType::class)
+                ->remove('picture');
 
             $form->handleRequest($request);
 
@@ -396,6 +401,8 @@ class UserController extends AppController
             $user = $this->doctrine->getRepository(User::class)
                 ->findOneBy(['pseudo' => $pseudo]);
 
+            $originPicture = $user->getPicture();
+
             if (!is_null($user)) {
                 $date = new DateTime();
                 $userConnected = $this->session->get('user');
@@ -406,58 +413,26 @@ class UserController extends AppController
                     $form->remove('mailValidate')
                         ->remove('status');
 
-                    //Vérifie que la variable FILES existe
-                    if (isset($_FILES['picture'])) {
-                        //Vérification pour l'extension du fichier
-                        $nameExplode = explode('.', $_FILES['picture']['name']);
-                        if (in_array(end($nameExplode), ['jpg', 'png', 'gif'])) {
-                            $manager = $this->doctrine->getManager();
-                            if (!is_null($user->getPicture())) {
-                                $filePath = dirname(__DIR__, 2) .
-                                    '/public/img/pic_dl/users/' .
-                                    $user->getPicture()->getName() .
-                                    '.' .
-                                    $user->getPicture()->getExt();
-
-                                if (file_exists($filePath)) {
-                                    unlink($filePath);
-                                }
-
-                                $picture = $user->getPicture();
-                                $picture->setName($user->getPseudo() . $date->format('YmdHi'))
-                                    ->setExt(end($nameExplode));
-                                $manager->persist($picture);
-                                $manager->flush();
-                            } else {
-                                $picture = new Picture();
-                                $picture->setAlt('Photo de profil de ' . $user->getPseudo())
-                                    ->setExt(end($nameExplode))
-                                    ->setName($user->getPseudo() . $date->format('YmdHi'));
-                                $manager->persist($picture);
-                                $manager->flush();
-
-                                /** @var Picture $picture */
-                                $picture = $this->doctrine->getRepository(Picture::class)
-                                    ->findOneBy(['name' => $user->getPseudo() . $date->format('YmdHi')]);
-                                $user->setPicture($picture);
-                                $manager->persist($user);
-                                $manager->flush();
-                            }
-
-                            move_uploaded_file(
-                                $_FILES['picture']['tmp_name'],
-                                'img/pic_dl/users/' . $picture->getName() . '.' . $picture->getExt()
-                            );
-                        }
-                    }
-
                     //Prend en charge les modifications du profil et le charge en BDD
                     $form->handleRequest($request);
                     if ($form->isSubmitted() && $form->isValid()) {
                         $password = hash('sha512', strlen($user->getPassword()) . $user->getPassword());
                         $user->setPassword($password);
 
+                        if (!is_null($originPicture)) {
+                            $filePath = "{$originPicture->getUploadRootDir('users')}/{$originPicture->getName()}.{$originPicture->getExt()}";
+                            if (file_exists($filePath)) {
+                                unlink($filePath);
+                            }
+                        }
+
+                        $picture = $user->getPicture();
+                        $picture->setName($user->getPseudo() . (new DateTime())->format('YmdHis'))
+                            ->setAlt('Photo de profil de ' . $user->getPseudo())
+                            ->upload('users');
+
                         $manager = $this->doctrine->getManager();
+                        $manager->persist($picture);
                         $manager->persist($user);
                         $manager->flush();
 

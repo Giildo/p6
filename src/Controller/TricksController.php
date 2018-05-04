@@ -64,6 +64,10 @@ class TricksController extends AppController
             if (is_null($options) && is_null($category)) {
                 $tricks = $this->doctrine->getRepository(Trick::class)
                     ->findAll();
+
+                if (empty($tricks)) {
+                    return $this->redirectToHome();
+                }
             } else {
                 /** @var TrickRepository $trickRepository */
                 $trickRepository = $this->doctrine->getRepository(Trick::class);
