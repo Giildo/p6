@@ -420,7 +420,11 @@ class UserController extends AppController
                         $user->setPassword($password);
 
                         if (!is_null($originPicture)) {
-                            $filePath = "{$originPicture->getUploadRootDir('users')}/{$originPicture->getName()}.{$originPicture->getExt()}";
+                            $filePath =
+                                "{$originPicture->getUploadRootDir('users')}/
+                                {$originPicture->getName()}.
+                                {$originPicture->getExt()}";
+
                             if (file_exists($filePath)) {
                                 unlink($filePath);
                             }

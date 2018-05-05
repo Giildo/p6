@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\Picture;
 use App\Entity\Trick;
 use App\Entity\User;
 use App\Form\CommentType;
@@ -350,11 +351,20 @@ class TricksController extends AppController
                     ->setUpdatedAt($dateTime)
                     ->setUser($userConnected);
 
+                /** @var Picture $picture */
+                $i = 1;
+                foreach ($trick->getPictures()->toArray() as $picture) {
+                    $picture->setAlt("Image associée à la figure {$trick->getName()}")
+                        ->setName($trick->getSlug() . $i);
+                }
+
+                var_dump($trick);
+
                 $manager = $this->doctrine->getManager();
                 $manager->persist($trick);
-                $manager->flush();
+                //$manager->flush();
 
-                return $this->redirectToHome();
+                //return $this->redirectToHome();
             }
 
             return $this->render('/tricks/add.html.twig', [
