@@ -23,58 +23,63 @@ body #trick #description p {
   text-indent: 30px;
 }
 /* line 28, ../../../sass/tricks/show.scss */
+body #trick #description #medias div {
+  display: flex;
+  align-items: center;
+}
+/* line 35, ../../../sass/tricks/show.scss */
 body #trick #infos {
   text-align: center;
   font-size: 1.1em;
   margin-bottom: 15px;
 }
-/* line 36, ../../../sass/tricks/show.scss */
+/* line 43, ../../../sass/tricks/show.scss */
 body #comments #comments_block {
   background: white;
   margin-top: 50px;
   border-radius: 15px 15px 0 0;
 }
-/* line 42, ../../../sass/tricks/show.scss */
+/* line 49, ../../../sass/tricks/show.scss */
 body #comments #comments_block form label {
   font-family: "Raleway", sans-serif;
 }
-/* line 47, ../../../sass/tricks/show.scss */
+/* line 54, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment {
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 5px;
   margin: 20px 0;
 }
-/* line 52, ../../../sass/tricks/show.scss */
+/* line 59, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .avatar_containing {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-/* line 57, ../../../sass/tricks/show.scss */
+/* line 64, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .avatar_containing .row {
   padding: 15px 0;
 }
-/* line 60, ../../../sass/tricks/show.scss */
+/* line 67, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .avatar_containing .row img {
   border-radius: 50%;
   border: 1px solid black;
 }
-/* line 67, ../../../sass/tricks/show.scss */
+/* line 74, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing {
   position: relative;
 }
-/* line 70, ../../../sass/tricks/show.scss */
+/* line 77, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .row {
   margin: 15px 0 15px 15px;
 }
-/* line 73, ../../../sass/tricks/show.scss */
+/* line 80, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .row .bubble {
   position: relative;
   background: #dddddd;
   border-radius: 10px;
   padding: 15px;
 }
-/* line 79, ../../../sass/tricks/show.scss */
+/* line 86, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .row .bubble::before {
   content: '';
   position: absolute;
@@ -86,39 +91,39 @@ body #comments #comments_block .comment .bubble_containing .row .bubble::before 
   border-right: 25px solid #dddddd;
   border-bottom: 10px solid transparent;
 }
-/* line 93, ../../../sass/tricks/show.scss */
+/* line 100, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .row .bubble h3 {
   font-size: 1rem;
 }
-/* line 96, ../../../sass/tricks/show.scss */
+/* line 103, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .row .bubble h3 span {
   font-size: 1.05rem;
   font-weight: bold;
 }
-/* line 104, ../../../sass/tricks/show.scss */
+/* line 111, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .modifs {
   position: absolute;
   top: 25px;
   right: 25px;
 }
-/* line 109, ../../../sass/tricks/show.scss */
+/* line 116, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .modifs form {
   display: inline-block;
 }
-/* line 112, ../../../sass/tricks/show.scss */
+/* line 119, ../../../sass/tricks/show.scss */
 body #comments #comments_block .comment .bubble_containing .modifs form button {
   background: none;
   border: none;
   cursor: pointer;
 }
 
-/* line 125, ../../../sass/tricks/show.scss */
+/* line 132, ../../../sass/tricks/show.scss */
 h2 {
   text-align: center;
   padding: 20px 0;
   font-family: "Russo One", sans-serif;
 }
-/* line 130, ../../../sass/tricks/show.scss */
+/* line 137, ../../../sass/tricks/show.scss */
 h2::after {
   content: '';
   width: 90%;

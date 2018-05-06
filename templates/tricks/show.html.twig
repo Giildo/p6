@@ -17,10 +17,17 @@
             </header>
 
             <section id="description">
-                <div class="row" id="medias">
-                    <h2 class="col-sm-12">Médias</h2>
-                    <iframe src="https://www.youtube.com/embed/CA5bURVJ5zk" frameborder="0" allowfullscreen></iframe>
-                </div>
+                {% if trick.pictures is not empty %}
+                    <div class="row" id="medias">
+                        <h2 class="col-sm-12">Médias</h2>
+                        {% for picture in trick.pictures %}
+                            <div class="col-sm-3">
+                                <img src="/p6/public/img/pic_dl/tricks/{{ picture.name }}.{{ picture.ext }}"
+                                     alt="{{ picture.alt }}" class="img-fluid" />
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 <div class="row" id="description">
                     <h2 class="col-sm-12">Description</h2>
                     <p class="col-sm-12">{{ trick.description }}</p>
@@ -86,7 +93,8 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         {% if comment.user.picture is null %}
-                                            <img src="/p6/public/img/pic_dl/users/avatar.jpg" alt="Logo" class="img-fluid"/>
+                                            <img src="/p6/public/img/pic_dl/users/avatar.jpg" alt="Logo"
+                                                 class="img-fluid"/>
                                         {% else %}
                                             <img src="/p6/public/img/pic_dl/users/{{ comment.user.picture.name }}.{{ comment.user.picture.ext }}"
                                                  alt="{{ comment.user.picture.alt }}" class="img-fluid"/>
