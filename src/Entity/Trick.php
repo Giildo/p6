@@ -72,7 +72,7 @@ class Trick
     private $user;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Picture")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Picture", cascade={"persist", "remove"})
      * @var Collection|Picture[]
      */
     private $pictures;
@@ -83,13 +83,12 @@ class Trick
     private $headPicture;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Video")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Video", cascade={"persist", "remove"})
      */
     private $videos;
 
     public function __construct()
     {
-        $this->picture = new ArrayCollection();
         $this->pictures = new ArrayCollection();
         $this->videos = new ArrayCollection();
     }

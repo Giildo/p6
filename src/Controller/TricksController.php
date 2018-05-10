@@ -179,6 +179,7 @@ class TricksController extends AppController
     public function delete(Request $request, int $id): RedirectResponse
     {
         if ($this->isContrib()) {
+            /** @var Trick $trick */
             $trick = $this->doctrine->getRepository(Trick::class)
                 ->find($id);
 
@@ -191,6 +192,20 @@ class TricksController extends AppController
                 'sha512',
                 $trick->getId() . $date->format('d') . $trick->getName() . $date->format('m')
             );
+
+            if (!is_null($trick->getHeadPicture())) {
+                /** @var Picture $picture */
+                $picture = $trick->getHeadPicture();
+                unlink("{$picture->getUploadRootDir('tricks')}/{$picture->getName()}.{$picture->getExt()}");
+            }
+
+            if (!empty($pictures = $trick->getPictures()->toArray())) {
+                /** @var Picture $picture */
+                foreach ($pictures as $picture) {
+                    unlink("{$picture->getUploadRootDir('tricks')}/{$picture->getName()}.{$picture->getExt()}");
+                }
+            }
+
 
             if ($tokenVerif === $request->request->get('token')) {
                 $manager = $this->doctrine->getManager();
