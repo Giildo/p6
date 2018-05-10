@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Category;
 use App\Entity\Trick;
 use App\Entity\User;
+use App\Entity\Video;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -19,7 +20,7 @@ class TrickType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('headPicture', PictureType::class, ['label' => 'Image à la Une'])
+            ->add('headPicture', PictureType::class, ['label' => 'Image à la Une', 'required' => false])
             ->add('name', TextType::class, ['label' => 'Nom'])
             ->add('slug')
             ->add('description')
@@ -31,6 +32,12 @@ class TrickType extends AbstractType
             ->add('pictures', CollectionType::class, [
                 'label'         => 'Images',
                 'entry_type'    => PictureType::class,
+                'allow_add'     => true,
+                'entry_options' => ['label' => false]
+            ])
+            ->add('videos', CollectionType::class, [
+                'label'         => 'Videos',
+                'entry_type'    => VideoType::class,
                 'allow_add'     => true,
                 'entry_options' => ['label' => false]
             ])

@@ -13,7 +13,7 @@
                 <figure>
                     {% if trick.headPicture is not null %}
                         <img src="/p6/public/img/pic_dl/tricks/{{ trick.headPicture.name }}.{{ trick.headPicture.ext }}"
-                             alt="{{ trick.headPicture.alt }}" class="img-fluid" />
+                             alt="{{ trick.headPicture.alt }}" class="img-fluid"/>
                     {% else %}
                         <img src="/p6/public/img/header.jpg" alt="Image d'un snowboarder" class="img-fluid"/>
                     {% endif %}
@@ -28,8 +28,12 @@
                         {% for picture in trick.pictures %}
                             <div class="col-sm-3">
                                 <img src="/p6/public/img/pic_dl/tricks/{{ picture.name }}.{{ picture.ext }}"
-                                     alt="{{ picture.alt }}" class="img-fluid" />
+                                     alt="{{ picture.alt }}" class="img-fluid"/>
                             </div>
+                        {% endfor %}
+                        {% for video in trick.videos %}
+                            <iframe src="https://www.youtube.com/embed/{{ video.name }}" frameborder="0"
+                                    allow="autoplay; encrypted-media" allowfullscreen class="col-sm-3"></iframe>
                         {% endfor %}
                     </div>
                 {% endif %}

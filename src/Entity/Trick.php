@@ -82,10 +82,16 @@ class Trick
      */
     private $headPicture;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Video")
+     */
+    private $videos;
+
     public function __construct()
     {
         $this->picture = new ArrayCollection();
         $this->pictures = new ArrayCollection();
+        $this->videos = new ArrayCollection();
     }
 
     public function getId()
@@ -226,6 +232,32 @@ class Trick
     public function setHeadPicture(?Picture $headPicture): self
     {
         $this->headPicture = $headPicture;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Video[]
+     */
+    public function getVideos(): Collection
+    {
+        return $this->videos;
+    }
+
+    public function addVideo(Video $video): self
+    {
+        if (!$this->videos->contains($video)) {
+            $this->videos[] = $video;
+        }
+
+        return $this;
+    }
+
+    public function removeVideo(Video $video): self
+    {
+        if ($this->videos->contains($video)) {
+            $this->videos->removeElement($video);
+        }
 
         return $this;
     }

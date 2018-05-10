@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Entity\Picture;
 use App\Entity\Trick;
 use App\Entity\User;
+use App\Entity\Video;
 use App\Form\CommentType;
 use App\Form\TrickType;
 use App\Repository\TrickRepository;
@@ -361,6 +362,18 @@ class TricksController extends AppController
                         ->upload('tricks');
 
                     $manager->persist($picture);
+
+                    $i++;
+                }
+
+                /** @var Video $video */
+                $i = 1;
+                foreach ($trick->getVideos()->toArray() as $video) {
+                    $videoName = explode('v=', $video->getName());
+
+                    $video->setName($videoName[1]);
+
+                    $manager->persist($video);
 
                     $i++;
                 }
