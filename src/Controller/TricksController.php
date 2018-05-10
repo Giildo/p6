@@ -11,6 +11,7 @@ use App\Form\CommentType;
 use App\Form\TrickType;
 use App\Repository\TrickRepository;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -136,6 +137,23 @@ class TricksController extends AppController
                 return $this->redirectToRoute('tricks_index');
             }
 
+            //Supprime les vidéos et les images associées à la figure pour éviter qu'ils ne s'affichent dans le formulaire
+            /** @var Picture $picture */
+            $pictures = $trick->getPictures()->toArray();
+            if (!empty($pictures)) {
+                foreach ($pictures as $picture) {
+                    $trick->removePicture($picture);
+                }
+            }
+
+            /** @var Video $video */
+            $videos = $trick->getVideos()->toArray();
+            if (!empty($videos)) {
+                foreach ($videos as $video) {
+                    $trick->removeVideo($video);
+                }
+            }
+
             $date = new DateTime();
             $tokenVerif = hash(
                 'sha512',
@@ -156,14 +174,28 @@ class TricksController extends AppController
             if ($form->isSubmitted() && $form->isValid()) {
                 $trick->setUpdatedAt(new DateTime());
 
+
+                if (!empty($pictures)) {
+                    foreach ($pictures as $picture) {
+                        $trick->addPicture($picture);
+                    }
+                }
+
+                if (!empty($videos)) {
+                    foreach ($videos as $video) {
+                        $trick->addVideo($video);
+                    }
+                }
+
                 $manager = $this->doctrine->getManager();
                 $manager->persist($trick);
                 $manager->flush();
                 return $this->redirectToRoute('tricks_index');
             }
 
-            return $this->render('/tricks/add.html.twig', [
-                'form' => $form->createView()
+            return $this->render('/tricks/modify.html.twig', [
+                'form'  => $form->createView(),
+                'trick' => $trick
             ]);
         } else {
             return $this->redirectToError(401);
