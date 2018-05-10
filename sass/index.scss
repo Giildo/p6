@@ -78,6 +78,11 @@ header {
     margin: 25px 0;
   }
 
+  .row {
+    display: flex;
+    align-items: center;
+  }
+
   .card {
     border: {
       width: 0;

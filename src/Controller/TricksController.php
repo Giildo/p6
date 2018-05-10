@@ -365,6 +365,12 @@ class TricksController extends AppController
                     $i++;
                 }
 
+                $trick->getHeadPicture()->setAlt("Image à la une de la figure {$trick->getName()}")
+                    ->setName("head_{$trick->getSlug()}")
+                    ->upload('tricks');
+
+                $manager->persist($trick->getHeadPicture());
+
                 $manager->persist($trick);
                 $manager->flush();
 

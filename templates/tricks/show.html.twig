@@ -11,7 +11,12 @@
         <div class="offset-sm-2 col-sm-8" id="trick">
             <header class="row">
                 <figure>
-                    <img src="/p6/public/img/header.jpg" alt="Image d'un snowboarder" class="img-fluid"/>
+                    {% if trick.headPicture is not null %}
+                        <img src="/p6/public/img/pic_dl/tricks/{{ trick.headPicture.name }}.{{ trick.headPicture.ext }}"
+                             alt="{{ trick.headPicture.alt }}" class="img-fluid" />
+                    {% else %}
+                        <img src="/p6/public/img/header.jpg" alt="Image d'un snowboarder" class="img-fluid"/>
+                    {% endif %}
                     <h1>{{ trick.category.name | capitalize }} - {{ trick.name }}</h1>
                 </figure>
             </header>

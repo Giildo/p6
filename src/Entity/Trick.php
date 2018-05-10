@@ -77,6 +77,11 @@ class Trick
      */
     private $pictures;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Picture", cascade={"persist", "remove"})
+     */
+    private $headPicture;
+
     public function __construct()
     {
         $this->picture = new ArrayCollection();
@@ -209,6 +214,18 @@ class Trick
         if ($this->pictures->contains($picture)) {
             $this->pictures->removeElement($picture);
         }
+
+        return $this;
+    }
+
+    public function getHeadPicture(): ?Picture
+    {
+        return $this->headPicture;
+    }
+
+    public function setHeadPicture(?Picture $headPicture): self
+    {
+        $this->headPicture = $headPicture;
 
         return $this;
     }
