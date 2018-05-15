@@ -11,7 +11,6 @@ use App\Form\CommentType;
 use App\Form\TrickType;
 use App\Repository\TrickRepository;
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -137,12 +136,27 @@ class TricksController extends AppController
                 return $this->redirectToRoute('tricks_index');
             }
 
+            $date = new DateTime();
+            $tokens = [];
+
+            if (!is_null($trick->getHeadPicture())) {
+                $tokens['header'] = hash(
+                    'sha512',
+                    $trick->getHeadPicture()->getName() . $date->format('m') . $trick->getHeadPicture()->getExt()
+                );
+            }
+
             //Supprime les vidéos et les images associées à la figure pour éviter qu'ils ne s'affichent dans le formulaire
             /** @var Picture $picture */
             $pictures = $trick->getPictures()->toArray();
             if (!empty($pictures)) {
                 foreach ($pictures as $picture) {
                     $trick->removePicture($picture);
+
+                    $tokens['pictures'][$picture->getName()] = hash(
+                        'sha512',
+                        $picture->getName() . $date->format('m') . $picture->getExt()
+                    );
                 }
             }
 
@@ -151,18 +165,28 @@ class TricksController extends AppController
             if (!empty($videos)) {
                 foreach ($videos as $video) {
                     $trick->removeVideo($video);
+
+                    $tokens['videos'][$video->getName()] = hash(
+                        'sha512',
+                        $video->getName() . $date->format('m')
+                    );
                 }
             }
 
-            $date = new DateTime();
-            $tokenVerif = hash(
+            /*$tokenVerif = hash(
                 'sha512',
                 $trick->getId() . $date->format('d') . $trick->getName() . $date->format('m')
             );
 
-            if ($tokenVerif !== $request->request->get('token') && is_null($request->request->get('trick'))) {
+            if ((
+                    $tokenVerif !== $request->request->get('token') &&
+                    is_null($request->request->get('trick'))
+                ) || (
+                    !in_array($request->request->get('picture')['delete']['header'], $tokens)
+                )
+            ) {
                 return $this->redirectToRoute('tricks_index');
-            }
+            }*/
 
             $form = $this->createForm(TrickType::class, $trick);
             $form->remove('createdAt')
@@ -194,8 +218,11 @@ class TricksController extends AppController
             }
 
             return $this->render('/tricks/modify.html.twig', [
-                'form'  => $form->createView(),
-                'trick' => $trick
+                'form'     => $form->createView(),
+                'trick'    => $trick,
+                'pictures' => $pictures,
+                'videos'   => $videos,
+                'tokens'   => $tokens
             ]);
         } else {
             return $this->redirectToError(401);

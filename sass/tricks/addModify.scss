@@ -1,0 +1,21 @@
+@import "../_variables";
+
+h1, h2 {
+  text-align: center;
+}
+
+#medias {
+  .row {
+    .col-sm-12 {
+      #pictures, #videos, #header {
+        form {
+          @include form;
+
+          button {
+            @include button;
+          }
+        }
+      }
+    }
+  }
+}
