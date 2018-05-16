@@ -39,7 +39,7 @@
                                     <img src="/p6/public/img/pic_dl/tricks/{{ picture.name }}.{{ picture.ext }}"
                                          alt="{{ picture.alt }}" class="img-fluid"/>
                                     <form method="post" name="media">
-                                        <input type="hidden" name="media[delete][picture][[{{ picture.name }}]]"
+                                        <input type="hidden" name="media[delete][picture][{{ picture.name }}]"
                                                value="{{ tokens.pictures[picture.name] }}"/>
                                         <button type="submit" class="material-icons">close</button>
                                     </form>

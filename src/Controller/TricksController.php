@@ -11,12 +11,14 @@ use App\Form\CommentType;
 use App\Form\TrickType;
 use App\Repository\TrickRepository;
 use DateTime;
+use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Date;
 use Twig\Environment;
 
 /**
@@ -128,16 +130,20 @@ class TricksController extends AppController
     public function modify(Request $request, int $id)
     {
         if ($this->isContrib()) {
+            //Récupère la Trick
             /** @var Trick $trick */
             $trick = $this->doctrine->getRepository(Trick::class)
                 ->find($id);
 
+            //Si elle est nulle renvoie vers la page d'accueil
             if (is_null($trick)) {
                 return $this->redirectToRoute('tricks_index');
             }
 
+            //Création des variables nécessaires
             $date = new DateTime();
             $tokens = [];
+            $manager = $this->doctrine->getManager();
 
             if (!is_null($trick->getHeadPicture())) {
                 $tokens['header'] = hash(
@@ -173,20 +179,90 @@ class TricksController extends AppController
                 }
             }
 
-            /*$tokenVerif = hash(
-                'sha512',
-                $trick->getId() . $date->format('d') . $trick->getName() . $date->format('m')
-            );
+            //Vérifie les tokens d'arrivée sur la page
+            if (is_null($request->request->get('media'))) {
+                $tokenVerif = hash(
+                    'sha512',
+                    $trick->getId() . $date->format('d') . $trick->getName() . $date->format('m')
+                );
 
-            if ((
-                    $tokenVerif !== $request->request->get('token') &&
-                    is_null($request->request->get('trick'))
-                ) || (
-                    !in_array($request->request->get('picture')['delete']['header'], $tokens)
-                )
-            ) {
-                return $this->redirectToRoute('tricks_index');
-            }*/
+                if ($tokenVerif !== $request->request->get('token') && empty($request->request->get('trick'))) {
+                    return $this->redirectToRoute('tricks_index');
+                }
+                // Si ce n'est pas le cas vérifie si on arrive par le biais des boutons de suppresion des médias
+            } else {
+                $delete = $request->request->get('media')['delete'];
+                $response = null;
+
+                //Cas de la supression de l'image à la Une
+                if (isset($delete['header']) && $tokens['header'] === $delete['header']) {
+                    /** @var Picture $headPicture */
+                    $headPicture = $trick->getHeadPicture();
+
+                    if (unlink($headPicture->getUploadRootDir('tricks') . '/'
+                        . $headPicture->getName() . '.'
+                        . $headPicture->getExt())) {
+
+                        $this->addVideos($trick, $manager, $videos);
+                        $this->addPictures($trick, $manager, $pictures);
+
+                        $trick->setHeadPicture(null);
+                        $manager->remove($headPicture);
+                        $manager->persist($trick);
+                        $manager->flush();
+
+                        return $this->redirectToRoute('tricks_modify', ['id' => $id]);
+                    }
+                } elseif (
+                    isset($delete['picture']) &&
+                    $delete['picture'][key($delete['picture'])] === $tokens['pictures'][key($delete['picture'])]
+                ) {
+                    /** @var Picture $picture */
+                    foreach ($pictures as $key => $picture) {
+                        if ($picture->getName() === key($delete['picture'])) {
+                            $deletePicture = $picture;
+
+                            if (unlink($deletePicture->getUploadRootDir('tricks') . '/'
+                                . $deletePicture->getName() . '.'
+                                . $deletePicture->getExt())) {
+
+                                array_splice($pictures, $key, 1);
+
+                                $this->addPictures($trick, $manager, $pictures);
+                                $this->addVideos($trick, $manager, $videos);
+
+                                $manager->remove($deletePicture);
+                                $manager->persist($trick);
+                                $manager->flush();
+
+                                return $this->redirectToRoute('tricks_modify', ['id' => $id]);
+                            }
+                        }
+                    }
+                } elseif (
+                    isset($delete['video']) &&
+                    $delete['video'][key($delete['video'])] === $tokens['videos'][key($delete['video'])]
+                ) {
+                    /** @var Picture $picture */
+                    foreach ($videos as $key => $video) {
+                        if ($video->getName() === key($delete['video'])) {
+                            $deleteVideo = $video;
+
+                            array_splice($videos, $key, 1);
+
+                            $this->addVideos($trick, $manager, $videos);
+                            $this->addPictures($trick, $manager, $pictures);
+
+                            $trick->removeVideo($deleteVideo);
+                            $manager->remove($deleteVideo);
+                            $manager->persist($trick);
+                            $manager->flush();
+
+                            return $this->redirectToRoute('tricks_modify', ['id' => $id]);
+                        }
+                    }
+                }
+            }
 
             $form = $this->createForm(TrickType::class, $trick);
             $form->remove('createdAt')
@@ -198,20 +274,10 @@ class TricksController extends AppController
             if ($form->isSubmitted() && $form->isValid()) {
                 $trick->setUpdatedAt(new DateTime());
 
+                $this->setHeadPicture($trick, $manager);
+                $this->addPictures($trick, $manager, $pictures);
+                $this->addVideos($trick, $manager, $videos);
 
-                if (!empty($pictures)) {
-                    foreach ($pictures as $picture) {
-                        $trick->addPicture($picture);
-                    }
-                }
-
-                if (!empty($videos)) {
-                    foreach ($videos as $video) {
-                        $trick->addVideo($video);
-                    }
-                }
-
-                $manager = $this->doctrine->getManager();
                 $manager->persist($trick);
                 $manager->flush();
                 return $this->redirectToRoute('tricks_index');
@@ -428,36 +494,11 @@ class TricksController extends AppController
 
                 $manager = $this->doctrine->getManager();
 
-                /** @var Picture $picture */
-                $i = 1;
-                foreach ($trick->getPictures()->toArray() as $picture) {
-                    $picture->setAlt("Image associée à la figure {$trick->getName()}")
-                        ->setName($trick->getSlug() . $i)
-                        ->upload('tricks');
+                //Ajout des images dans les tricks
+                $this->addPictures($trick, $manager);
+                $this->addVideos($trick, $manager);
 
-                    $manager->persist($picture);
-
-                    $i++;
-                }
-
-                /** @var Video $video */
-                $i = 1;
-                foreach ($trick->getVideos()->toArray() as $video) {
-                    $videoName = explode('v=', $video->getName());
-
-                    $video->setName($videoName[1]);
-
-                    $manager->persist($video);
-
-                    $i++;
-                }
-
-                $trick->getHeadPicture()->setAlt("Image à la une de la figure {$trick->getName()}")
-                    ->setName("head_{$trick->getSlug()}")
-                    ->upload('tricks');
-
-                $manager->persist($trick->getHeadPicture());
-
+                $this->setHeadPicture($trick, $manager);
                 $manager->persist($trick);
                 $manager->flush();
 
@@ -470,5 +511,116 @@ class TricksController extends AppController
         } else {
             return $this->redirectToError(401);
         }
+    }
+
+    /**
+     * @param Trick $trick
+     * @param ObjectManager $manager
+     */
+    private function setHeadPicture(Trick &$trick, ObjectManager $manager): void
+    {
+        $headPicture = $trick->getHeadPicture();
+
+        if (!is_null($headPicture)) {
+            $headPicture->setAlt("Image à la une de la figure {$trick->getName()}")
+                ->setName("head_{$trick->getSlug()}")
+                ->upload('tricks');
+
+            $manager->persist($headPicture);
+        }
+    }
+
+    /**
+     * @param Trick $trick
+     * @param ObjectManager $manager
+     * @param array|null $pictures
+     * @return void
+     */
+    private function addPictures(Trick &$trick, ObjectManager $manager, ?array $pictures = []): void
+    {
+        $i = 1;
+
+        $date = new DateTime();
+
+        /** @var Picture $picture */
+        foreach ($trick->getPictures()->toArray() as $picture) {
+            $picture->setAlt("Image associée à la figure {$trick->getName()}")
+                ->setName($trick->getSlug() . $date->format('YmdHis') . $i)
+                ->upload('tricks');
+
+            $manager->persist($picture);
+
+            $i++;
+        }
+
+        if (!empty($pictures)) {
+            foreach ($pictures as $picture) {
+                $trick->addPicture($picture);
+            }
+        }
+    }
+
+    /**
+     * @param Trick $trick
+     * @param ObjectManager $manager
+     * @param array|null $videos
+     * @return void
+     */
+    private function addVideos(Trick &$trick, ObjectManager $manager, ?array $videos = []): void
+    {
+        /** @var Video $video */
+        foreach ($trick->getVideos()->toArray() as $video) {
+            $videoName = explode('v=', $video->getName());
+
+            $video->setName($videoName[1]);
+
+            $manager->persist($video);
+        }
+
+        if (!empty($videos)) {
+            foreach ($videos as $video) {
+                $trick->addVideo($video);
+            }
+        }
+    }
+
+    /**
+     * @param Trick $trick
+     * @param Picture $deletePicture
+     * @param ObjectManager $manager
+     * @param array|null $videos
+     * @param array|null $pictures
+     * @return RedirectResponse|null
+     */
+    private function removePicture(Trick &$trick, Picture $deletePicture, ObjectManager $manager, int $id, ?array $videos = [], ?array $pictures = []): ?RedirectResponse
+    {
+        if (unlink($deletePicture->getUploadRootDir('tricks') . '/'
+            . $deletePicture->getName() . '.'
+            . $deletePicture->getExt())) {
+            $this->addVideos($trick, $manager, $videos);
+            $this->addPictures($trick, $manager, $pictures);
+
+            $trick->setHeadPicture(null);
+            $manager->remove($deletePicture);
+            $manager->persist($trick);
+            $manager->flush();
+
+            return $this->redirectToRoute('tricks_modify', ['id' => $id]);
+        } else {
+            return null;
+        }
+    }
+
+    private function removeHeadPicture(Trick &$trick, Picture $deletePicture, ObjectManager $manager, int $id, ?array $videos = [], ?array $pictures = []): ?RedirectResponse
+    {
+        $response = $this->removePicture($trick, $deletePicture, $manager, $id, $videos, $pictures);
+
+        if (!is_null($response)) {
+            $trick->setHeadPicture(null);
+            $manager->persist($trick);
+            $manager->flush();
+        }
+
+        return $response;
     }
 }
