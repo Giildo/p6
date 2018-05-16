@@ -1,0 +1,78 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ parent() }} - Modifier Trick - {{ trick.name }}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/p6/public/css/tricks/addModify.css"/>
+{% endblock %}
+
+{% block body %}
+    <h1>Modifier Trick</h1>
+    <h2>{{ trick.name }}</h2>
+
+    <div class="row">
+        <div class="col-sm-3" id="medias">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>Image à la Une</h3>
+                    {% if trick.headPicture is not null %}
+                        <div class="row" id="header">
+                            <div class="col-sm-12">
+                                <img src="/p6/public/img/pic_dl/tricks/{{ trick.headPicture.name }}.{{ trick.headPicture.ext }}"
+                                     alt="{{ trick.headPicture.alt }}" class="img-fluid"/>
+                                <form method="post" name="media">
+                                    <input type="hidden" name="media[delete][header]" value="{{ tokens.header }}"/>
+                                    <button type="submit" class="material-icons">close</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <img src="/p6/public/img/header.jpg" alt="Photo de profil par défaut" class="img-fluid"/>
+                    {% endif %}
+                </div>
+                {% if pictures is not empty %}
+                    <div class="col-sm-12">
+                        <h3>Images de la trick</h3>
+                        <div class="row" id="pictures">
+                            {% for picture in pictures %}
+                                <div class="col-sm-12">
+                                    <img src="/p6/public/img/pic_dl/tricks/{{ picture.name }}.{{ picture.ext }}"
+                                         alt="{{ picture.alt }}" class="img-fluid"/>
+                                    <form method="post" name="media">
+                                        <input type="hidden" name="media[delete][picture][{{ picture.name }}]"
+                                               value="{{ tokens.pictures[picture.name] }}"/>
+                                        <button type="submit" class="material-icons">close</button>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if videos is not empty %}
+                    <div class="col-sm-12">
+                        <h3>Vidéos de la trick</h3>
+                        <div class="row" id="videos">
+                            {% for video in videos %}
+                                <div class="col-sm-12">
+                                    <iframe src="https://www.youtube.com/embed/{{ video.name }}" frameborder="0"
+                                            allow="autoplay; encrypted-media" allowfullscreen
+                                            class="img-fluid"></iframe>
+                                    <form method="post" name="media">
+                                        <input type="hidden" name="media[delete][video][{{ video.name }}]"
+                                               value="{{ tokens.videos[video.name] }}"/>
+                                        <button type="submit" class="material-icons">close</button>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-sm-9">{{ form(form) }}</div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/p6/public/js/collectionType.js" type="text/javascript"></script>
+{% endblock %}

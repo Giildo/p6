@@ -9,7 +9,7 @@
 {% block body %}
     <header class="row" id="top">
         <figure class="offset-sm-12">
-            <img src="/p6/public/img/header.jpg" alt="Photo d'un snowboarder faisant une figure de snow" class="img-fluid"/>
+            <img src="/p6/public/img/header.jpg" alt="Photo d'un snowboarder" class="img-fluid"/>
             <h1 id="header_title">Snow<span class="bold shift">Tricks</span></h1>
             <figcaption>
                 Photo de <a href="https://unsplash.com/@saltnstreets" target="_blank">Alesia Kazantceva</a> sur
@@ -31,7 +31,12 @@
                 <div class="card col-lg-3 col-md-4 col-sm-12">
                     <div class="card-block">
                         <a href="/p6/trick/{{ trick.category.name }}/{{ trick.slug }}">
-                            <img src="/p6/public/img/header.jpg" alt="Image du trick" class="card-img-top"/>
+                            {% if trick.headPicture is not null %}
+                                <img src="/p6/public/img/pic_dl/tricks/{{ trick.headPicture.name }}.{{ trick.headPicture.ext }}"
+                                     alt="{{ trick.headPicture.alt }}" class="card-img-top" />
+                            {% else %}
+                                <img src="/p6/public/img/header.jpg" alt="Image d'un snowboarder" class="card-img-top"/>
+                            {% endif %}
                         </a>
 
                         <div class="card-footer">
@@ -43,11 +48,11 @@
                             {% if isContrib == true and tokens[trick.id] != null %}
                                 <div class="modifs">
                                     <form method="post" action="/trick/modifier/{{ trick.id }}">
-                                        <input type="hidden" value="{{ tokens[trick.id] }}" name="token" />
+                                        <input type="hidden" value="{{ tokens[trick.id] }}" name="token"/>
                                         <button type="submit" class="material-icons">create</button>
                                     </form>
                                     <form method="post" action="/trick/supprimer/{{ trick.id }}">
-                                        <input type="hidden" value="{{ tokens[trick.id] }}" name="token" />
+                                        <input type="hidden" value="{{ tokens[trick.id] }}" name="token"/>
                                         <button type="submit" class="material-icons">delete</button>
                                     </form>
                                 </div>

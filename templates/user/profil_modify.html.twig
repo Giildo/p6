@@ -24,15 +24,7 @@
             {% endif %}
         </div>
         <div class="col-sm-7">
-            {{ form_start(form, {'multipart': true}) }}
-            <div class="form-group row">
-                <label for="picture" class="col-form-label col-sm-2 form-control-label required">Photo de profil</label>
-                <div class="col-sm-10">
-                    <input type="file" accept=".png, .jpg, .gif" class="form-control" name="picture" id="picture"/>
-                </div>
-            </div>
-            {{ form_widget(form) }}
-            {{ form_end(form) }}
+            {{ form(form) }}
         </div>
     </section>
 

@@ -3,11 +3,15 @@
 {% block title %}{{ parent() }} - Ajouter une Trick{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="/p6/public/css/tricks/show.css" />
+    <link rel="stylesheet" href="/p6/public/css/tricks/addModify.css" />
 {% endblock %}
 
 {% block body %}
     <h1>Ajouter nouvelle Trick</h1>
 
     {{ form(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/p6/public/js/collectionType.js" type="text/javascript"></script>
 {% endblock %}

@@ -21,3 +21,22 @@ $borderRadiusShow: 15px;
 //error/error.css
 $marginTopTitle: 50px;
 $marginTopBlocks: 100px;
+
+//bouton form suppression media
+@mixin button {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 1px black solid;
+  background-color: white;
+  cursor: pointer;
+  box-shadow: 0 0 8px black;
+  font-size: 20px;
+  text-align: center;
+}
+
+@mixin form {
+  position: absolute;
+  top: 13px;
+  left: 35px;
+}

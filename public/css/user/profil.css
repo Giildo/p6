@@ -10,10 +10,10 @@ section .col-sm-3 {
 /* line 10, ../../../sass/user/profil.scss */
 section .col-sm-3 form {
   position: absolute;
-  top: 50px;
-  right: 25px;
+  top: 13px;
+  left: 35px;
 }
-/* line 15, ../../../sass/user/profil.scss */
+/* line 13, ../../../sass/user/profil.scss */
 section .col-sm-3 form button {
   width: 35px;
   height: 35px;

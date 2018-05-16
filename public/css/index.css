@@ -73,55 +73,60 @@ header figure .btn a i {
   margin: 25px 0;
 }
 /* line 81, ../../sass/index.scss */
+#tricks .row {
+  display: flex;
+  align-items: center;
+}
+/* line 86, ../../sass/index.scss */
 #tricks .card {
   border-width: 0;
   border-radius: 20px;
   margin: 15px 0;
 }
-/* line 88, ../../sass/index.scss */
+/* line 93, ../../sass/index.scss */
 #tricks .card .card-block {
   border-radius: 20px;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 }
-/* line 92, ../../sass/index.scss */
+/* line 97, ../../sass/index.scss */
 #tricks .card .card-block:hover {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
-/* line 98, ../../sass/index.scss */
+/* line 103, ../../sass/index.scss */
 #tricks .card a {
   color: #727054;
 }
-/* line 101, ../../sass/index.scss */
+/* line 106, ../../sass/index.scss */
 #tricks .card a:hover {
   color: #302f23;
   text-decoration: none;
 }
-/* line 107, ../../sass/index.scss */
+/* line 112, ../../sass/index.scss */
 #tricks .card .card-img-top {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
 }
-/* line 114, ../../sass/index.scss */
+/* line 119, ../../sass/index.scss */
 #tricks .card .card-footer {
   position: relative;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
 }
-/* line 121, ../../sass/index.scss */
+/* line 126, ../../sass/index.scss */
 #tricks .card .card-footer .card-text {
   margin: 0;
 }
-/* line 125, ../../sass/index.scss */
+/* line 130, ../../sass/index.scss */
 #tricks .card .card-footer .modifs {
   position: absolute;
   right: 10px;
   bottom: 5px;
 }
-/* line 130, ../../sass/index.scss */
+/* line 135, ../../sass/index.scss */
 #tricks .card .card-footer .modifs form {
   display: inline-block;
 }
-/* line 133, ../../sass/index.scss */
+/* line 138, ../../sass/index.scss */
 #tricks .card .card-footer .modifs form button {
   background: none;
   border: none;

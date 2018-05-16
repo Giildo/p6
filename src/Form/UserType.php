@@ -33,6 +33,7 @@ class UserType extends AbstractType
                 'class'        => Status::class,
                 'choice_label' => 'name'
             ])
+            ->add('picture', PictureType::class, ['label' => ' '])
             ->add('submit', SubmitType::class, [
                 'label' => 'Valider',
                 'attr'  => [

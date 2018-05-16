@@ -23,6 +23,13 @@ body {
       p {
         text-indent: 30px;
       }
+
+      #medias {
+        div {
+          display: flex;
+          align-items: center;
+        }
+      }
     }
 
     #infos {

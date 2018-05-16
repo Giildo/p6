@@ -1,0 +1,23 @@
+/* line 3, ../../../sass/tricks/addModify.scss */
+h1, h2 {
+  text-align: center;
+}
+
+/* line 11, ../../../sass/tricks/addModify.scss */
+#medias .row .col-sm-12 #pictures form, #medias .row .col-sm-12 #videos form, #medias .row .col-sm-12 #header form {
+  position: absolute;
+  top: 13px;
+  left: 35px;
+}
+/* line 14, ../../../sass/tricks/addModify.scss */
+#medias .row .col-sm-12 #pictures form button, #medias .row .col-sm-12 #videos form button, #medias .row .col-sm-12 #header form button {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 1px black solid;
+  background-color: white;
+  cursor: pointer;
+  box-shadow: 0 0 8px black;
+  font-size: 20px;
+  text-align: center;
+}
