@@ -1,0 +1,33 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ parent() }} - Espace de discussion{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/p6/public/css/comment/discussionSpace.css" />
+{% endblock %}
+
+{% block body %}
+    <h1>Espace de discussion</h1>
+
+    <div class="row">
+        <div class="offset-sm-2 col-sm-8">
+            {{ form(form) }}
+        </div>
+        
+        {% for comment in comments %}
+            <div class="offset-sm-2 col-sm-8">
+                <div class="row card-perso">
+                    <div class="col-sm-4">
+                        <img src="/p6/public/img/pic_dl/users/{{ comment.user.picture.name }}.{{ comment.user.picture.ext }}"
+                             alt="{{ comment.user.picture.alt }}" class="img-fluid" />
+                    </div>
+                    <div class="col-sm-8">
+                        <h5>{{ comment.user.pseudo }} a écrit le {{ comment.updatedAt | date('d-m-Y H:i') }} :</h5>
+                        <h6>Trick associée : {{ comment.trick.name }}</h6>
+                        <p>{{ comment.comment }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
