@@ -79,11 +79,13 @@ class Trick
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\Picture", cascade={"persist", "remove"})
+     * @var Picture
      */
     private $headPicture;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Video", cascade={"persist", "remove"})
+     * @var Collection|Video[]
      */
     private $videos;
 
@@ -107,7 +109,13 @@ class Trick
     {
         $this->name = $name;
 
-        $slug = str_replace(' ', '_', strtolower($name));
+        $slug = str_replace(' ', '-', strtolower($name));
+        $slug = str_replace('\'', '', $slug);
+        $slug = str_replace(['é', 'è', 'ê', 'ë'], 'e', $slug);
+        $slug = str_replace(['à', 'â'], 'a', $slug);
+        $slug = str_replace('ô', 'o', $slug);
+        $slug = str_replace(['ù', 'û', 'ü'], 'u', $slug);
+
         $this->setSlug($slug);
 
         return $this;
@@ -118,7 +126,7 @@ class Trick
         return $this->slug;
     }
 
-    public function setSlug($slug): self
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
 

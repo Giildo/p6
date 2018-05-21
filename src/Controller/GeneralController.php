@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Trick;
 use App\Entity\User;
+use App\Services\StatusService;
 use DateTime;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,18 +26,19 @@ class GeneralController extends AppController
      * @Route("/accueil", name="index")
      * @param RegistryInterface $doctrine
      * @param SessionInterface $session
+     * @param StatusService $statusReturn
      * @return Response
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function index(RegistryInterface $doctrine, SessionInterface $session): Response
+    public function index(RegistryInterface $doctrine, SessionInterface $session, StatusService $statusReturn): Response
     {
         $tricks = $doctrine->getRepository(Trick::class)
             ->findAll();
 
         $tokens = [];
-        if ($this->isContrib()) {
+        if ($statusReturn->isContrib()) {
             /** @var User $user */
             $user = $session->get('user');
 

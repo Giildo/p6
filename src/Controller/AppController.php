@@ -2,12 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\Status;
-use App\Entity\User;
+use App\Services\StatusService;
+use App\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
 
 abstract class AppController extends Controller
@@ -16,76 +15,20 @@ abstract class AppController extends Controller
      * @var Environment
      */
     private $twig;
+    /**
+     * @var StatusService
+     */
+    private $statusService;
+    /**
+     * @var UserService
+     */
+    private $userService;
 
-    public function __construct(Environment $twig)
+    public function __construct(Environment $twig, StatusService $statusService, UserService $userService)
     {
         $this->twig = $twig;
-    }
-
-    /**
-     * Vérifie si l'utilisateur en Session est une instance de @uses User
-     * Vérifie le jeton associé dans la variable "time"
-     * Si tout est OK return true
-     *
-     * @return bool
-     */
-    protected function isConnected(): bool
-    {
-        $session = new Session();
-        $user = $session->get('user');
-
-        if (!($user instanceof User)) {
-            return false;
-        }
-
-        $tokenVerif = hash('sha512', $user->getId() . strlen($user->getPseudo()) . $user->getLastName());
-        $token = $session->get('time');
-
-        if ($token !== $tokenVerif) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Vérifie que l'utilisateur est connecté avec la méthode @uses AppController::isConnected(),
-     * puis vérifie que le dit utilisateur a au moins le @uses Status::$name "Contributeur"
-     *
-     * @return bool
-     */
-    protected function isContrib(): bool
-    {
-        if ($this->isConnected()) {
-            $session = new Session();
-
-            /** @var User $user */
-            $user = $session->get('user');
-
-            return $user->getStatus()->getId() === 2 || $user->getStatus()->getId() === 3;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Vérifie que l'utilisateur est connecté avec la méthode @uses AppController::isConnected(),
-     * puis vérifie que le dit utilisateur a le @uses Status::$name "Administrateur"
-     *
-     * @return bool
-     */
-    protected function isAdmin(): bool
-    {
-        if ($this->isConnected()) {
-            $session = new Session();
-
-            /** @var User $user */
-            $user = $session->get('user');
-
-            return $user->getStatus()->getId() === 3;
-        } else {
-            return false;
-        }
+        $this->statusService = $statusService;
+        $this->userService = $userService;
     }
 
     /**
@@ -99,13 +42,12 @@ abstract class AppController extends Controller
      */
     protected function render(string $view, array $parameters = array(), Response $response = null): Response
     {
-        $parameters['isAdmin'] = $this->isAdmin();
-        $parameters['isContrib'] = $this->isContrib();
-        $parameters['isConnected'] = $this->isConnected();
+        $parameters['isAdmin'] = $this->statusService->isAdmin();
+        $parameters['isContrib'] = $this->statusService->isContrib();
+        $parameters['isConnected'] = $this->statusService->isConnected();
 
-        if ($this->isConnected()) {
-            $session = new Session();
-            $parameters['userConnected'] = $session->get('user');
+        if ($this->statusService->isConnected()) {
+            $parameters['userConnected'] = $this->userService->userConnected();
         }
 
         return new Response($this->twig->render($view, $parameters));
@@ -140,11 +82,11 @@ abstract class AppController extends Controller
                 break;
 
             case 401:
-                return $this->redirectToRoute('error_401', $params, RedirectResponse::HTTP_UNAUTHORIZED);
+                return $this->redirectToRoute('error_401', $params, RedirectResponse::HTTP_MOVED_PERMANENTLY);
                 break;
 
             default:
-                return $this->redirectToRoute('error_404', $params, RedirectResponse::HTTP_NOT_FOUND);
+                return $this->redirectToRoute('error_404', $params, RedirectResponse::HTTP_MOVED_PERMANENTLY);
                 break;
         }
     }

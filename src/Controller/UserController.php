@@ -7,6 +7,7 @@ use App\Entity\Status;
 use App\Entity\User;
 use App\Exception\UserException;
 use App\Form\UserType;
+use App\Services\StatusService;
 use DateTime;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -61,9 +62,9 @@ class UserController extends AppController
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function connection(Request $request)
+    public function connection(Request $request, StatusService $statusReturn)
     {
-        if (!$this->isConnected()) {
+        if (!$statusReturn->isConnected()) {
             if ($this->session->has('userTransfert')) {
                 $user = $this->session->get('userTransfert');
                 $this->session->remove('userTransfert');
