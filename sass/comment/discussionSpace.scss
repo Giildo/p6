@@ -1,0 +1,37 @@
+$borderRadiuxIndex: 20px;
+
+h1 {
+  text-align: center;
+}
+
+.card-perso {
+  margin: 20px 0;
+  background-color: #eeeeee;
+  border-radius: $borderRadiuxIndex;
+
+  .col-sm-4 {
+    padding: 0;
+    border-radius: $borderRadiuxIndex 0 0 $borderRadiuxIndex;
+
+    img {
+      border-radius: $borderRadiuxIndex 0 0 $borderRadiuxIndex;
+    }
+  }
+
+  .col-sm-8 {
+    border-radius: 0 $borderRadiuxIndex $borderRadiuxIndex 0;
+
+    h5 {
+      margin-top: 10px;
+    }
+
+    h6 {
+      text-indent: 20px;
+      font-style: italic;
+    }
+
+    p {
+      margin-top: 10px;
+    }
+  }
+}

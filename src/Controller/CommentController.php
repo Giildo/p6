@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\User;
+use App\Form\CommentType;
 use App\Repository\CommentRepository;
 use App\Services\StatusService;
 use App\Services\UserService;
@@ -58,7 +60,7 @@ class CommentController extends AppController
 
                 if ($category === 'utilisateur') {
                     $comments = $commentRepository->findByUser($value);
-                } elseif ($category === 'trick'){
+                } elseif ($category === 'trick') {
                     $comments = $commentRepository->findByTrick($value);
                 }
 
@@ -122,5 +124,50 @@ class CommentController extends AppController
         } else {
             return $this->redirectToError(401);
         }
+    }
+
+    /**
+     * @Route("/espace-de-discussion", name="discussionSpace")
+     * @param Request $request
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function discussionSpace(Request $request): Response
+    {
+        $comments = $this->doctrine->getRepository(Comment::class)
+            ->findAll();
+
+        $comment = new Comment();
+
+        $form = $this->createForm(CommentType::class, $comment)
+            ->remove('createdAt')
+            ->remove('updatedAt')
+            ->remove('user');
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var User $user */
+            $user = $this->doctrine->getRepository(User::class)
+                ->find(['id' => $this->userService->userConnected()->getId()]);
+
+            $date = new DateTime();
+            $comment->setCreatedAt($date)
+                ->setUpdatedAt($date)
+                ->setUser($user);
+
+            $manager = $this->doctrine->getManager();
+            $manager->persist($comment);
+            $manager->flush();
+
+            return $this->redirectToRoute("comment_discussionSpace");
+        }
+
+        return $this->render('comment/discussionSpace.html.twig', [
+            'comments' => $comments,
+            'form'     => $form->createView()
+        ]);
     }
 }

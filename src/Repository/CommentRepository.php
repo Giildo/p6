@@ -9,7 +9,6 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 /**
  * @method Comment|null find($id, $lockMode = null, $lockVersion = null)
  * @method Comment|null findOneBy(array $criteria, array $orderBy = null)
- * @method Comment[]    findAll()
  * @method Comment[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class CommentRepository extends ServiceEntityRepository
@@ -37,6 +36,11 @@ class CommentRepository extends ServiceEntityRepository
             ->setParameter('name', $trick)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findAll()
+    {
+        return $this->findBy([], ['updatedAt' => 'desc']);
     }
 
 //    /**

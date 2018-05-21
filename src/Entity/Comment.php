@@ -39,14 +39,14 @@ class Comment
     private $updatedAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      * @var User
      */
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Trick")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Trick", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      * @var Trick
      */
