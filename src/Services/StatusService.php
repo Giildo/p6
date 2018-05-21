@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Entity\Status;
 use App\Entity\User;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class StatusService
@@ -12,10 +13,15 @@ class StatusService
      * @var SessionInterface
      */
     private $session;
+    /**
+     * @var RegistryInterface
+     */
+    private $doctrine;
 
-    public function __construct(SessionInterface $session)
+    public function __construct(SessionInterface $session, RegistryInterface $doctrine)
     {
         $this->session = $session;
+        $this->doctrine = $doctrine;
     }
 
     /**
@@ -55,8 +61,11 @@ class StatusService
             /** @var User $user */
             $user = $this->session->get('user');
 
-            return $user->getStatus()->getName() === Status::CONTRIB ||
-                $user->getStatus()->getName() === Status::ADMIN;
+            /** @var Status $status */
+            $status = $this->doctrine->getRepository(Status::class)
+                ->find($user->getStatus()->getId());
+
+            return $status->getName() === Status::CONTRIB || $status->getName() === Status::ADMIN;
         } else {
             return false;
         }
@@ -74,7 +83,11 @@ class StatusService
             /** @var User $user */
             $user = $this->session->get('user');
 
-            return $user->getStatus()->getName() === Status::ADMIN;
+            /** @var Status $status */
+            $status = $this->doctrine->getRepository(Status::class)
+                ->find($user->getStatus()->getId());
+
+            return $status->getName() === Status::ADMIN;
         } else {
             return false;
         }

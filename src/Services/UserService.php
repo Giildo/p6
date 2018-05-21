@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Entity\Status;
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 

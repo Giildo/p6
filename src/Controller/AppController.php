@@ -18,11 +18,11 @@ abstract class AppController extends Controller
     /**
      * @var StatusService
      */
-    private $statusService;
+    protected $statusService;
     /**
      * @var UserService
      */
-    private $userService;
+    protected $userService;
 
     public function __construct(Environment $twig, StatusService $statusService, UserService $userService)
     {

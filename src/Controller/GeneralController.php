@@ -26,19 +26,18 @@ class GeneralController extends AppController
      * @Route("/accueil", name="index")
      * @param RegistryInterface $doctrine
      * @param SessionInterface $session
-     * @param StatusService $statusReturn
      * @return Response
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function index(RegistryInterface $doctrine, SessionInterface $session, StatusService $statusReturn): Response
+    public function index(RegistryInterface $doctrine, SessionInterface $session): Response
     {
         $tricks = $doctrine->getRepository(Trick::class)
             ->findAll();
 
         $tokens = [];
-        if ($statusReturn->isContrib()) {
+        if ($this->statusService->isContrib()) {
             /** @var User $user */
             $user = $session->get('user');
 

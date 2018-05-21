@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Exception\UserException;
 use App\Form\UserType;
 use App\Services\StatusService;
+use App\Services\UserService;
 use DateTime;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -38,9 +39,9 @@ class UserController extends AppController
      */
     private $session;
 
-    public function __construct(Environment $twig, RegistryInterface $doctrine, SessionInterface $session)
+    public function __construct(Environment $twig, StatusService $statusService, UserService $userService, RegistryInterface $doctrine, SessionInterface $session)
     {
-        parent::__construct($twig);
+        parent::__construct($twig, $statusService, $userService);
 
         $this->doctrine = $doctrine;
         $this->session = $session;
@@ -62,9 +63,9 @@ class UserController extends AppController
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function connection(Request $request, StatusService $statusReturn)
+    public function connection(Request $request)
     {
-        if (!$statusReturn->isConnected()) {
+        if (!$this->statusService->isConnected()) {
             if ($this->session->has('userTransfert')) {
                 $user = $this->session->get('userTransfert');
                 $this->session->remove('userTransfert');
@@ -127,7 +128,7 @@ class UserController extends AppController
      */
     public function registry(Request $request)
     {
-        if (!$this->isConnected()) {
+        if (!$this->statusService->isConnected()) {
             $user = new User();
 
             $form = $this->createForm(UserType::class, $user)
@@ -193,7 +194,7 @@ class UserController extends AppController
      */
     public function adminUsers()
     {
-        if ($this->isAdmin()) {
+        if ($this->statusService->isAdmin()) {
             $users = $this->doctrine->getRepository(User::class)
                 ->findAll();
 
@@ -228,7 +229,7 @@ class UserController extends AppController
      */
     public function add(Request $request)
     {
-        if ($this->isAdmin()) {
+        if ($this->statusService->isAdmin()) {
             $user = new User();
 
             $form = $this->createForm(UserType::class, $user);
@@ -274,7 +275,7 @@ class UserController extends AppController
      */
     public function modify(Request $request, string $pseudo)
     {
-        if ($this->isAdmin()) {
+        if ($this->statusService->isAdmin()) {
             /** @var User $user */
             $user = $this->doctrine->getRepository(User::class)
                 ->findOneBy(['pseudo' => $pseudo]);
@@ -332,7 +333,7 @@ class UserController extends AppController
      */
     public function delete(Request $request, string $pseudo): RedirectResponse
     {
-        if ($this->isAdmin()) {
+        if ($this->statusService->isAdmin()) {
             /** @var User $user */
             $user = $this->doctrine->getRepository(User::class)
                 ->findOneBy(['pseudo' => $pseudo]);
@@ -371,7 +372,7 @@ class UserController extends AppController
      */
     public function profilIndex(string $pseudo)
     {
-        if ($this->isConnected()) {
+        if ($this->statusService->isConnected()) {
             /** @var User $user */
             $user = $this->doctrine->getRepository(User::class)
                 ->findOneBy(['pseudo' => $pseudo]);
@@ -397,7 +398,7 @@ class UserController extends AppController
      */
     public function profilModify(Request $request, string $pseudo)
     {
-        if ($this->isConnected()) {
+        if ($this->statusService->isConnected()) {
             /** @var User $user */
             $user = $this->doctrine->getRepository(User::class)
                 ->findOneBy(['pseudo' => $pseudo]);
@@ -546,7 +547,7 @@ class UserController extends AppController
     {
         $this->session->set('user', $user);
 
-        $token = hash('sha512', $user->getId() . strlen($user->getPseudo()) . $user->getLastName());
+        $token = hash('sha512', strlen($user->getPseudo()) . $user->getLastName());
         $this->session->set('time', $token);
     }
 
