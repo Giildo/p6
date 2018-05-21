@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Trick;
 use App\Entity\User;
+use App\Services\StatusService;
 use DateTime;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +37,7 @@ class GeneralController extends AppController
             ->findAll();
 
         $tokens = [];
-        if ($this->isContrib()) {
+        if ($this->statusService->isContrib()) {
             /** @var User $user */
             $user = $session->get('user');
 

@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Repository\CommentRepository;
+use App\Services\StatusService;
+use App\Services\UserService;
 use DateTime;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -24,9 +26,10 @@ class CommentController extends AppController
      */
     private $doctrine;
 
-    public function __construct(Environment $twig, RegistryInterface $doctrine)
+    public function __construct(Environment $twig, StatusService $statusService, UserService $userService, RegistryInterface $doctrine)
     {
-        parent::__construct($twig);
+        parent::__construct($twig, $statusService, $userService);
+
         $this->doctrine = $doctrine;
     }
 
@@ -45,7 +48,7 @@ class CommentController extends AppController
      */
     public function index(?string $category = null, ?string $value = null)
     {
-        if ($this->isAdmin()) {
+        if ($this->statusService->isAdmin()) {
             $filtered = false;
             $comments = [];
             if (!is_null($category) && !is_null($value)) {
@@ -95,7 +98,7 @@ class CommentController extends AppController
      */
     public function delete(Request $request, int $id): RedirectResponse
     {
-        if ($this->isAdmin()) {
+        if ($this->statusService->isAdmin()) {
             $comment = $this->doctrine->getRepository(Comment::class)
                 ->find($id);
 

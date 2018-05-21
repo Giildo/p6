@@ -10,9 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Status
 {
-    public const ADMIN = 1;
-    public const CONTRIB = 2;
-    public const USER = 3;
+    public const ADMIN = 'Administrateur';
+    public const CONTRIB = 'Contributeur';
+    public const USER = 'Utilisateur';
 
     /**
      * @ORM\Id()

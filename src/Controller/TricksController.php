@@ -10,6 +10,8 @@ use App\Entity\Video;
 use App\Form\CommentType;
 use App\Form\TrickType;
 use App\Repository\TrickRepository;
+use App\Services\StatusService;
+use App\Services\UserService;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -33,9 +35,9 @@ class TricksController extends AppController
      */
     private $doctrine;
 
-    public function __construct(Environment $twig, RegistryInterface $doctrine, SessionInterface $session)
+    public function __construct(Environment $twig, StatusService $statusService, UserService $userService, RegistryInterface $doctrine)
     {
-        parent::__construct($twig);
+        parent::__construct($twig, $statusService, $userService);
         $this->doctrine = $doctrine;
     }
 
@@ -61,7 +63,7 @@ class TricksController extends AppController
      */
     public function index(?string $category = null, ?string $options = null)
     {
-        if ($this->isContrib()) {
+        if ($this->statusService->isContrib()) {
             $filtered = false;
             $tricks = null;
 
@@ -129,7 +131,7 @@ class TricksController extends AppController
      */
     public function modify(Request $request, int $id)
     {
-        if ($this->isContrib()) {
+        if ($this->statusService->isContrib()) {
             //Récupère la Trick
             /** @var Trick $trick */
             $trick = $this->doctrine->getRepository(Trick::class)
@@ -303,7 +305,7 @@ class TricksController extends AppController
      */
     public function delete(Request $request, int $id): RedirectResponse
     {
-        if ($this->isContrib()) {
+        if ($this->statusService->isContrib()) {
             /** @var Trick $trick */
             $trick = $this->doctrine->getRepository(Trick::class)
                 ->find($id);
@@ -471,7 +473,7 @@ class TricksController extends AppController
      */
     public function add(Request $request, SessionInterface $session)
     {
-        if ($this->isConnected()) {
+        if ($this->statusService->isConnected()) {
             $trick = new Trick();
 
             $form = $this->createForm(TrickType::class, $trick);
