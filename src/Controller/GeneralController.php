@@ -25,13 +25,12 @@ class GeneralController extends AppController
      *
      * @Route("/accueil", name="index")
      * @param RegistryInterface $doctrine
-     * @param SessionInterface $session
      * @return Response
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function index(RegistryInterface $doctrine, SessionInterface $session): Response
+    public function index(RegistryInterface $doctrine): Response
     {
         $tricks = $doctrine->getRepository(Trick::class)
             ->findAll();
@@ -39,7 +38,7 @@ class GeneralController extends AppController
         $tokens = [];
         if ($this->statusService->isContrib()) {
             /** @var User $user */
-            $user = $session->get('user');
+            $user = $this->userService->userConnected();
 
             /** @var Trick $trick */
             $date = new DateTime();

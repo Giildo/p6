@@ -18,9 +18,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Date;
 use Twig\Environment;
 
 /**
@@ -35,6 +33,13 @@ class TricksController extends AppController
      */
     private $doctrine;
 
+    /**
+     * TricksController constructor.
+     * @param Environment $twig
+     * @param StatusService $statusService
+     * @param UserService $userService
+     * @param RegistryInterface $doctrine
+     */
     public function __construct(
         Environment $twig,
         StatusService $statusService,
@@ -113,9 +118,9 @@ class TricksController extends AppController
                 'options',
                 'tokens'
             ));
-        } else {
-            return $this->redirectToError(401);
         }
+
+        return $this->redirectToError(401);
     }
 
     /**
@@ -126,20 +131,20 @@ class TricksController extends AppController
      * méthode, et si tout est OK modifie la figure en BDD et renvoie l'utilisateur vers la liste des figures.
      *
      * @Route("/modifier/{id}", name="modify", requirements={"id"="\d+"})
+     * @param int $idTrick
      * @param Request $request
-     * @param int $id
      * @return RedirectResponse|Response
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function modify(Request $request, int $id)
+    public function modify(int $idTrick, Request $request)
     {
         if ($this->statusService->isContrib()) {
             //Récupère la Trick
             /** @var Trick $trick */
             $trick = $this->doctrine->getRepository(Trick::class)
-                ->find($id);
+                ->find($idTrick);
 
             //Si elle est nulle renvoie vers la page d'accueil
             if (is_null($trick)) {
@@ -216,7 +221,7 @@ class TricksController extends AppController
                         $manager->persist($trick);
                         $manager->flush();
 
-                        return $this->redirectToRoute('tricks_modify', ['id' => $id]);
+                        return $this->redirectToRoute('tricks_modify', ['id' => $idTrick]);
                     }
                 } elseif (isset($delete['picture']) &&
                     $delete['picture'][key($delete['picture'])] === $tokens['pictures'][key($delete['picture'])]) {
@@ -237,7 +242,7 @@ class TricksController extends AppController
                                 $manager->persist($trick);
                                 $manager->flush();
 
-                                return $this->redirectToRoute('tricks_modify', ['id' => $id]);
+                                return $this->redirectToRoute('tricks_modify', ['id' => $idTrick]);
                             }
                         }
                     }
@@ -258,7 +263,7 @@ class TricksController extends AppController
                             $manager->persist($trick);
                             $manager->flush();
 
-                            return $this->redirectToRoute('tricks_modify', ['id' => $id]);
+                            return $this->redirectToRoute('tricks_modify', ['id' => $idTrick]);
                         }
                     }
                 }
@@ -297,16 +302,16 @@ class TricksController extends AppController
 
     /**
      * @Route("/supprimer/{id}", name="delete", requirements={"id"="\w+"})
+     * @param int $idTricks
      * @param Request $request
-     * @param int $id
      * @return RedirectResponse
      */
-    public function delete(Request $request, int $id): RedirectResponse
+    public function delete(int $idTricks, Request $request): RedirectResponse
     {
         if ($this->statusService->isContrib()) {
             /** @var Trick $trick */
             $trick = $this->doctrine->getRepository(Trick::class)
-                ->find($id);
+                ->find($idTricks);
 
             if (is_null($trick)) {
                 return $this->redirectToRoute('tricks_index');
@@ -350,24 +355,17 @@ class TricksController extends AppController
      *     defaults={"action"=null, "id"=null},
      *     requirements={"category"="\w+", "slug"="\w+", "id"="\d+", "action"="del"})
      * @param Request $request
-     * @param SessionInterface $session
      * @param string $slug
      * @param string $category
      * @param null|string $action
-     * @param int $id
+     * @param int $idTrick
      * @return Response|RedirectResponse
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function show(
-        Request $request,
-        SessionInterface $session,
-        string $slug,
-        string $category,
-        ?string $action = null,
-        ?int $id = null
-    ) {
+    public function show(Request $request, string $slug, string $category, ?string $action = null, ?int $idTrick = null)
+    {
         /** @var Trick $trick */
         $trick = $this->doctrine->getRepository(Trick::class)
             ->findOneBy(["slug" => $slug]);
@@ -375,9 +373,9 @@ class TricksController extends AppController
         if (!is_null($trick) && $trick->getCategory()->getName() === $category) {
             $date = new DateTime();
 
-            if (!is_null($id)) {
+            if (!is_null($idTrick)) {
                 $comment = $this->doctrine->getRepository(Comment::class)
-                    ->find($id);
+                    ->find($idTrick);
 
                 $tokenVerif = hash(
                     'sha512',
@@ -415,14 +413,14 @@ class TricksController extends AppController
                 ->remove('user');
 
             /** @var User $userIndentify */
-            $userIndentify = $session->get('user');
+            $userIndentify = $this->userService->userConnected();
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var User $user */
                 $user = $this->doctrine->getRepository(User::class)
                     ->find($userIndentify->getId());
 
-                if (is_null($id)) {
+                if (is_null($idTrick)) {
                     $comment->setCreatedAt($date)
                         ->setUpdatedAt($date)
                         ->setUser($user)
@@ -470,13 +468,12 @@ class TricksController extends AppController
     /**
      * @Route("/ajouter", name="add")
      * @param Request $request
-     * @param SessionInterface $session
      * @return Response|RedirectResponse
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function add(Request $request, SessionInterface $session)
+    public function add(Request $request)
     {
         if ($this->statusService->isConnected()) {
             $trick = new Trick();
@@ -491,7 +488,7 @@ class TricksController extends AppController
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var User $userConnected */
                 $userConnected = $this->doctrine->getRepository(User::class)
-                    ->find($session->get('user')->getId());
+                    ->find($this->userService->userConnected()->getId());
 
                 $dateTime = new DateTime();
 
@@ -589,57 +586,5 @@ class TricksController extends AppController
                 $trick->addVideo($video);
             }
         }
-    }
-
-    /**
-     * @param Trick $trick
-     * @param Picture $deletePicture
-     * @param ObjectManager $manager
-     * @param array|null $videos
-     * @param array|null $pictures
-     * @return RedirectResponse|null
-     */
-    private function removePicture(
-        Trick &$trick,
-        Picture $deletePicture,
-        ObjectManager $manager,
-        int $id,
-        ?array $videos = [],
-        ?array $pictures = []
-    ): ?RedirectResponse {
-        if (unlink($deletePicture->getUploadRootDir('tricks') . '/'
-            . $deletePicture->getName() . '.'
-            . $deletePicture->getExt())) {
-            $this->addVideos($trick, $manager, $videos);
-            $this->addPictures($trick, $manager, $pictures);
-
-            $trick->setHeadPicture(null);
-            $manager->remove($deletePicture);
-            $manager->persist($trick);
-            $manager->flush();
-
-            return $this->redirectToRoute('tricks_modify', ['id' => $id]);
-        } else {
-            return null;
-        }
-    }
-
-    private function removeHeadPicture(
-        Trick &$trick,
-        Picture $deletePicture,
-        ObjectManager $manager,
-        int $id,
-        ?array $videos = [],
-        ?array $pictures = []
-    ): ?RedirectResponse {
-        $response = $this->removePicture($trick, $deletePicture, $manager, $id, $videos, $pictures);
-
-        if (!is_null($response)) {
-            $trick->setHeadPicture(null);
-            $manager->persist($trick);
-            $manager->flush();
-        }
-
-        return $response;
     }
 }
