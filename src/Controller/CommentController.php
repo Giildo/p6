@@ -91,22 +91,22 @@ class CommentController extends AppController
                 'value',
                 'tokens'
             ));
-        } else {
-            return $this->redirectToError(401);
         }
+
+        return $this->redirectToError(401);
     }
 
     /**
      * @Route("/admin/commentaires/supprimer/{id}", name="admin_delete", requirements={"id"="\d+"})
      * @param Request $request
-     * @param int $id
+     * @param int $idComment
      * @return RedirectResponse
      */
-    public function delete(Request $request, int $id): RedirectResponse
+    public function delete(Request $request, int $idComment): RedirectResponse
     {
         if ($this->statusService->isAdmin()) {
             $comment = $this->doctrine->getRepository(Comment::class)
-                ->find($id);
+                ->find($idComment);
 
             if (!is_null($comment)) {
                 $token = $request->request->get('token');

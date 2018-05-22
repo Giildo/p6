@@ -66,9 +66,9 @@ class StatusService
                 ->find($user->getStatus()->getId());
 
             return $status->getName() === Status::CONTRIB || $status->getName() === Status::ADMIN;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Picture;
 use App\Entity\Status;
 use App\Entity\User;
 use App\Exception\UserException;
@@ -18,7 +17,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Date;
 use Twig\Environment;
 
 /**
@@ -109,9 +107,9 @@ class UserController extends AppController
                 'pageTitle' => 'Se connecter',
                 'pageType'  => 'connection'
             ]);
-        } else {
-            return $this->redirectToHome();
         }
+
+        return $this->redirectToHome();
     }
 
     /**
@@ -412,7 +410,7 @@ class UserController extends AppController
 
             if (!is_null($user)) {
                 $date = new DateTime();
-                $userConnected = $this->session->get('user');
+                $userConnected = $this->userService->userConnected();
 
                 //Vérifie que l'utilisateur connecté est le même que celui du profil
                 if ($userConnected->getPseudo() === $user->getPseudo()) {
@@ -460,8 +458,8 @@ class UserController extends AppController
                             $user->getPseudo() . $date->format('d') . $user->getPicture()->getAlt()
                         );
 
-                        if (isset($_POST['picture']['delete'])) {
-                            if ($_POST['picture']['delete'] === $picToken) {
+                        if (isset($request->request->get('picture')['delete'])) {
+                            if ($request->request->get('picture')['delete'] === $picToken) {
                                 $filePath = dirname(__DIR__, 2) .
                                     '/public/img/pic_dl/users/' .
                                     $user->getPicture()->getName() .
