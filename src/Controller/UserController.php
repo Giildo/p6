@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Status;
 use App\Entity\User;
 use App\Exception\UserException;
-use App\Form\UserType;
+use App\Form\Type\UserType;
 use App\Services\StatusService;
 use App\Services\UserService;
 use DateTime;
@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Twig\Environment;
 
 /**
  * Gère la connexion, l'enregistrement d'un nouvel utilisateur et la déconnexion.
@@ -38,13 +37,12 @@ class UserController extends AppController
     private $session;
 
     public function __construct(
-        Environment $twig,
         StatusService $statusService,
         UserService $userService,
         RegistryInterface $doctrine,
         SessionInterface $session
     ) {
-        parent::__construct($twig, $statusService, $userService);
+        parent::__construct($statusService, $userService);
 
         $this->doctrine = $doctrine;
         $this->session = $session;
@@ -62,18 +60,15 @@ class UserController extends AppController
      * @Route("/connexion", name="connection")
      * @param Request $request
      * @return Response|RedirectResponse
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function connection(Request $request)
     {
         if (!$this->statusService->isConnected()) {
+            $user = new User();
+
             if ($this->session->has('userTransfert')) {
                 $user = $this->session->get('userTransfert');
                 $this->session->remove('userTransfert');
-            } else {
-                $user = new User();
             }
 
             $form = $this->createForm(UserType::class, $user)
@@ -125,9 +120,6 @@ class UserController extends AppController
      * @Route("/enregistrement", name="registry")
      * @param Request $request
      * @return Response|RedirectResponse
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function registry(Request $request)
     {
@@ -191,9 +183,6 @@ class UserController extends AppController
      *
      * @Route("/admin/utilisateurs", name="admin_users")
      * @return Response|RedirectResponse
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function adminUsers()
     {
@@ -226,9 +215,6 @@ class UserController extends AppController
      * @Route("/admin/utilisateur/ajouter", name="admin_add")
      * @param Request $request
      * @return RedirectResponse|Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function add(Request $request)
     {
@@ -272,9 +258,6 @@ class UserController extends AppController
      * @param Request $request
      * @param string $pseudo
      * @return RedirectResponse|Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function modify(Request $request, string $pseudo)
     {
@@ -369,9 +352,6 @@ class UserController extends AppController
      * @Route("/profil/{pseudo}", name="profil_index", requirements={"pseudo"="\w+"})
      * @param string $pseudo
      * @return RedirectResponse|Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function profilIndex(string $pseudo)
     {
@@ -395,9 +375,6 @@ class UserController extends AppController
      * @param Request $request
      * @param string $pseudo
      * @return Response|RedirectResponse
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function profilModify(Request $request, string $pseudo)
     {

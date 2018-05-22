@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\User;
-use App\Form\CommentType;
+use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
 use App\Services\StatusService;
 use App\Services\UserService;
@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Twig\Environment;
 
 /**
  * @Route("/p6", name="comment_")
@@ -28,13 +27,15 @@ class CommentController extends AppController
      */
     private $doctrine;
 
-    public function __construct(
-        Environment $twig,
-        StatusService $statusService,
-        UserService $userService,
-        RegistryInterface $doctrine
-    ) {
-        parent::__construct($twig, $statusService, $userService);
+    /**
+     * CommentController constructor.
+     * @param StatusService $statusService
+     * @param UserService $userService
+     * @param RegistryInterface $doctrine
+     */
+    public function __construct(StatusService $statusService, UserService $userService, RegistryInterface $doctrine)
+    {
+        parent::__construct($statusService, $userService);
 
         $this->doctrine = $doctrine;
     }
@@ -48,16 +49,13 @@ class CommentController extends AppController
      * @param null|string $category
      * @param null|string $value
      * @return RedirectResponse|Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function index(?string $category = null, ?string $value = null)
     {
         if ($this->statusService->isAdmin()) {
             $filtered = false;
-            $comments = [];
             if (!is_null($category) && !is_null($value)) {
+                $comments = [];
 
                 /** @var CommentRepository $commentRepository */
                 $commentRepository = $this->doctrine->getRepository(Comment::class);
@@ -134,9 +132,6 @@ class CommentController extends AppController
      * @Route("/espace-de-discussion", name="discussionSpace")
      * @param Request $request
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function discussionSpace(Request $request): Response
     {

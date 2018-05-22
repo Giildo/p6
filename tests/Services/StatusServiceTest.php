@@ -129,8 +129,6 @@ class StatusServiceTest extends TestCase
         );
         $this->session->set('time', $token);
 
-        $doctrine = $this->doctrine;
-
         $this->repository->method('find')->willReturn($status);
 
         $statusService = new StatusService($this->session, $this->doctrine);

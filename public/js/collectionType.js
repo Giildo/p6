@@ -40,7 +40,7 @@ $(function () {
         collectionHolderVid.append(newForm);
     }
 
-    $('.add_picture').on('click', function (e) {
+    $(".add_picture").on("click", function (e) {
         // prevent the link from creating a "#" on the URL
         e.preventDefault();
 
@@ -49,7 +49,7 @@ $(function () {
     });
 
 
-    $('.add_video').on('click', function (e) {
+    $(".add_video").on("click", function (e) {
         // prevent the link from creating a "#" on the URL
         e.preventDefault();
 

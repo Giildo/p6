@@ -1,29 +1,25 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Type;
 
-use App\Entity\Comment;
-use App\Entity\Trick;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\Message;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CommentType extends AbstractType
+class ContactType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('comment', TextareaType::class, ['label' => 'Laisser un commentaire'])
-            ->add('createdAt')
-            ->add('updatedAt')
-            ->add('user')
-            ->add('trick', EntityType::class, [
-                'class'        => Trick::class,
-                'choice_label' => 'name'
-            ])
+            ->add('name', TextType::class, ['label' => 'Nom et Prénom'])
+            ->add('mail', EmailType::class, ['label' => 'Email'])
+            ->add('subject', TextType::class, ['label' => 'Sujet'])
+            ->add('message', TextareaType::class)
             ->add('submit', SubmitType::class, [
                 'label' => 'Valider',
                 'attr'  => [
@@ -35,7 +31,7 @@ class CommentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Comment::class,
+            'data_class' => Message::class,
         ]);
     }
 }

@@ -7,14 +7,9 @@ use App\Services\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Twig\Environment;
 
 abstract class AppController extends Controller
 {
-    /**
-     * @var Environment
-     */
-    private $twig;
     /**
      * @var StatusService
      */
@@ -24,9 +19,8 @@ abstract class AppController extends Controller
      */
     protected $userService;
 
-    public function __construct(Environment $twig, StatusService $statusService, UserService $userService)
+    public function __construct(StatusService $statusService, UserService $userService)
     {
-        $this->twig = $twig;
         $this->statusService = $statusService;
         $this->userService = $userService;
     }
@@ -36,9 +30,6 @@ abstract class AppController extends Controller
      * @param array $parameters
      * @param Response|null $response
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     protected function render(string $view, array $parameters = array(), Response $response = null): Response
     {
@@ -50,7 +41,7 @@ abstract class AppController extends Controller
             $parameters['userConnected'] = $this->userService->userConnected();
         }
 
-        return new Response($this->twig->render($view, $parameters));
+        return parent::render($view, $parameters, $response);
     }
 
     /**

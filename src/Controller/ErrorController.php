@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use App\Form\ContactType;
+use App\Entity\Message;
+use App\Form\Type\ContactType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,9 +19,6 @@ class ErrorController extends AppController
      * @Route("/401", name="401")
      * @param Request $request
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function e401(Request $request): Response
     {
@@ -48,9 +46,6 @@ class ErrorController extends AppController
      * @Route("/500", name="500")
      * @param Request $request
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function e500(Request $request): Response
     {

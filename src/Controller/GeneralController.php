@@ -4,11 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Trick;
 use App\Entity\User;
-use App\Services\StatusService;
 use DateTime;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -26,9 +24,6 @@ class GeneralController extends AppController
      * @Route("/accueil", name="index")
      * @param RegistryInterface $doctrine
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function index(RegistryInterface $doctrine): Response
     {
@@ -43,13 +38,13 @@ class GeneralController extends AppController
             /** @var Trick $trick */
             $date = new DateTime();
             foreach ($tricks as $trick) {
+                $tokens[$trick->getId()] = null;
+
                 if ($trick->getUser()->getId() === $user->getId()) {
                     $tokens[$trick->getId()] = hash(
                         'sha512',
                         $trick->getId() . $date->format('d') . $trick->getName() . $date->format('m')
                     );
-                } else {
-                    $tokens[$trick->getId()] = null;
                 }
             }
         }

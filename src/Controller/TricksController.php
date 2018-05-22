@@ -7,8 +7,8 @@ use App\Entity\Picture;
 use App\Entity\Trick;
 use App\Entity\User;
 use App\Entity\Video;
-use App\Form\CommentType;
-use App\Form\TrickType;
+use App\Form\Type\CommentType;
+use App\Form\Type\TrickType;
 use App\Repository\TrickRepository;
 use App\Services\StatusService;
 use App\Services\UserService;
@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Twig\Environment;
 
 /**
  * @Route("/p6/trick", name="tricks_")
@@ -35,18 +34,13 @@ class TricksController extends AppController
 
     /**
      * TricksController constructor.
-     * @param Environment $twig
      * @param StatusService $statusService
      * @param UserService $userService
      * @param RegistryInterface $doctrine
      */
-    public function __construct(
-        Environment $twig,
-        StatusService $statusService,
-        UserService $userService,
-        RegistryInterface $doctrine
-    ) {
-        parent::__construct($twig, $statusService, $userService);
+    public function __construct(StatusService $statusService, UserService $userService, RegistryInterface $doctrine)
+    {
+        parent::__construct($statusService, $userService);
         $this->doctrine = $doctrine;
     }
 
@@ -66,9 +60,6 @@ class TricksController extends AppController
      * @param null|string $category
      * @param null|string $options
      * @return RedirectResponse|Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function index(?string $category = null, ?string $options = null)
     {
@@ -134,9 +125,6 @@ class TricksController extends AppController
      * @param int $idTrick
      * @param Request $request
      * @return RedirectResponse|Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function modify(int $idTrick, Request $request)
     {
@@ -203,7 +191,6 @@ class TricksController extends AppController
                 // Si ce n'est pas le cas vérifie si on arrive par le biais des boutons de suppresion des médias
             } else {
                 $delete = $request->request->get('media')['delete'];
-                $response = null;
 
                 //Cas de la supression de l'image à la Une
                 if (isset($delete['header']) && $tokens['header'] === $delete['header']) {
@@ -225,46 +212,62 @@ class TricksController extends AppController
                     }
                 } elseif (isset($delete['picture']) &&
                     $delete['picture'][key($delete['picture'])] === $tokens['pictures'][key($delete['picture'])]) {
+                    $pictureAtDelete = false;
+                    $keyPicture = null;
                     /** @var Picture $picture */
                     foreach ($pictures as $key => $picture) {
                         if ($picture->getName() === key($delete['picture'])) {
-                            $deletePicture = $picture;
-
-                            if (unlink($deletePicture->getUploadRootDir('tricks') . '/'
-                                . $deletePicture->getName() . '.'
-                                . $deletePicture->getExt())) {
-                                array_splice($pictures, $key, 1);
-
-                                $this->addPictures($trick, $manager, $pictures);
-                                $this->addVideos($trick, $manager, $videos);
-
-                                $manager->remove($deletePicture);
-                                $manager->persist($trick);
-                                $manager->flush();
-
-                                return $this->redirectToRoute('tricks_modify', ['id' => $idTrick]);
-                            }
+                            $keyPicture = $key;
+                            $pictureAtDelete = true;
+                            break;
                         }
                     }
-                } elseif (isset($delete['video']) &&
-                    $delete['video'][key($delete['video'])] === $tokens['videos'][key($delete['video'])]) {
-                    /** @var Picture $picture */
-                    foreach ($videos as $key => $video) {
-                        if ($video->getName() === key($delete['video'])) {
-                            $deleteVideo = $video;
 
-                            array_splice($videos, $key, 1);
+                    if ($pictureAtDelete) {
+                        $deletePicture = $picture;
 
-                            $this->addVideos($trick, $manager, $videos);
+                        if (unlink($deletePicture->getUploadRootDir('tricks') . '/'
+                            . $deletePicture->getName() . '.'
+                            . $deletePicture->getExt())) {
+                            array_splice($pictures, $keyPicture, 1);
+
                             $this->addPictures($trick, $manager, $pictures);
+                            $this->addVideos($trick, $manager, $videos);
 
-                            $trick->removeVideo($deleteVideo);
-                            $manager->remove($deleteVideo);
+                            $manager->remove($deletePicture);
                             $manager->persist($trick);
                             $manager->flush();
 
                             return $this->redirectToRoute('tricks_modify', ['id' => $idTrick]);
                         }
+                    }
+                } elseif (isset($delete['video']) &&
+                    $delete['video'][key($delete['video'])] === $tokens['videos'][key($delete['video'])]) {
+                    $pictureAtDelete = false;
+                    $keyPicture = null;
+                    /** @var Picture $picture */
+                    foreach ($videos as $key => $video) {
+                        if ($video->getName() === key($delete['video'])) {
+                            $keyPicture = $key;
+                            $pictureAtDelete = true;
+                            break;
+                        }
+                    }
+
+                    if ($pictureAtDelete) {
+                        $deleteVideo = $video;
+
+                        array_splice($videos, $keyPicture, 1);
+
+                        $this->addVideos($trick, $manager, $videos);
+                        $this->addPictures($trick, $manager, $pictures);
+
+                        $trick->removeVideo($deleteVideo);
+                        $manager->remove($deleteVideo);
+                        $manager->persist($trick);
+                        $manager->flush();
+
+                        return $this->redirectToRoute('tricks_modify', ['id' => $idTrick]);
                     }
                 }
             }
@@ -360,9 +363,6 @@ class TricksController extends AppController
      * @param null|string $action
      * @param int $idTrick
      * @return Response|RedirectResponse
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function show(Request $request, string $slug, string $category, ?string $action = null, ?int $idTrick = null)
     {
@@ -469,9 +469,6 @@ class TricksController extends AppController
      * @Route("/ajouter", name="add")
      * @param Request $request
      * @return Response|RedirectResponse
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
     public function add(Request $request)
     {
@@ -542,19 +539,19 @@ class TricksController extends AppController
      */
     private function addPictures(Trick &$trick, ObjectManager $manager, ?array $pictures = []): void
     {
-        $i = 1;
+        $counter = 1;
 
         $date = new DateTime();
 
         /** @var Picture $picture */
         foreach ($trick->getPictures()->toArray() as $picture) {
             $picture->setAlt("Image associée à la figure {$trick->getName()}")
-                ->setName($trick->getSlug() . $date->format('YmdHis') . $i)
+                ->setName($trick->getSlug() . $date->format('YmdHis') . $counter)
                 ->upload('tricks');
 
             $manager->persist($picture);
 
-            $i++;
+            $counter++;
         }
 
         if (!empty($pictures)) {
