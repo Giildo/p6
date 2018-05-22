@@ -1,4 +1,4 @@
-$(function(){
+$(function () {
     $('.deleteConfirm').click(function (e) {
         var source = $(this).data('src');
         var token = $(this).data('token');

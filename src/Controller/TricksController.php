@@ -35,8 +35,12 @@ class TricksController extends AppController
      */
     private $doctrine;
 
-    public function __construct(Environment $twig, StatusService $statusService, UserService $userService, RegistryInterface $doctrine)
-    {
+    public function __construct(
+        Environment $twig,
+        StatusService $statusService,
+        UserService $userService,
+        RegistryInterface $doctrine
+    ) {
         parent::__construct($twig, $statusService, $userService);
         $this->doctrine = $doctrine;
     }
@@ -154,7 +158,7 @@ class TricksController extends AppController
                 );
             }
 
-            //Supprime les vidéos et les images associées à la figure pour éviter qu'ils ne s'affichent dans le formulaire
+            //Supprime les vidéos et les images associées à la figure pour qu'ils ne s'affichent dans le formulaire
             /** @var Picture $picture */
             $pictures = $trick->getPictures()->toArray();
             if (!empty($pictures)) {
@@ -204,7 +208,6 @@ class TricksController extends AppController
                     if (unlink($headPicture->getUploadRootDir('tricks') . '/'
                         . $headPicture->getName() . '.'
                         . $headPicture->getExt())) {
-
                         $this->addVideos($trick, $manager, $videos);
                         $this->addPictures($trick, $manager, $pictures);
 
@@ -215,10 +218,8 @@ class TricksController extends AppController
 
                         return $this->redirectToRoute('tricks_modify', ['id' => $id]);
                     }
-                } elseif (
-                    isset($delete['picture']) &&
-                    $delete['picture'][key($delete['picture'])] === $tokens['pictures'][key($delete['picture'])]
-                ) {
+                } elseif (isset($delete['picture']) &&
+                    $delete['picture'][key($delete['picture'])] === $tokens['pictures'][key($delete['picture'])]) {
                     /** @var Picture $picture */
                     foreach ($pictures as $key => $picture) {
                         if ($picture->getName() === key($delete['picture'])) {
@@ -227,7 +228,6 @@ class TricksController extends AppController
                             if (unlink($deletePicture->getUploadRootDir('tricks') . '/'
                                 . $deletePicture->getName() . '.'
                                 . $deletePicture->getExt())) {
-
                                 array_splice($pictures, $key, 1);
 
                                 $this->addPictures($trick, $manager, $pictures);
@@ -241,10 +241,8 @@ class TricksController extends AppController
                             }
                         }
                     }
-                } elseif (
-                    isset($delete['video']) &&
-                    $delete['video'][key($delete['video'])] === $tokens['videos'][key($delete['video'])]
-                ) {
+                } elseif (isset($delete['video']) &&
+                    $delete['video'][key($delete['video'])] === $tokens['videos'][key($delete['video'])]) {
                     /** @var Picture $picture */
                     foreach ($videos as $key => $video) {
                         if ($video->getName() === key($delete['video'])) {
@@ -362,8 +360,14 @@ class TricksController extends AppController
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function show(Request $request, SessionInterface $session, string $slug, string $category, ?string $action = null, ?int $id = null)
-    {
+    public function show(
+        Request $request,
+        SessionInterface $session,
+        string $slug,
+        string $category,
+        ?string $action = null,
+        ?int $id = null
+    ) {
         /** @var Trick $trick */
         $trick = $this->doctrine->getRepository(Trick::class)
             ->findOneBy(["slug" => $slug]);
@@ -445,7 +449,8 @@ class TricksController extends AppController
             if (!is_null($userIndentify)) {
                 foreach ($comments as $comment) {
                     $tokens[$comment->getId()] = ($comment->getUser()->getId() === $userIndentify->getId()) ?
-                        hash('sha512',
+                        hash(
+                            'sha512',
                             $comment->getId() . $date->format('d') . $comment->getComment()
                         ) : null;
                 }
@@ -594,8 +599,14 @@ class TricksController extends AppController
      * @param array|null $pictures
      * @return RedirectResponse|null
      */
-    private function removePicture(Trick &$trick, Picture $deletePicture, ObjectManager $manager, int $id, ?array $videos = [], ?array $pictures = []): ?RedirectResponse
-    {
+    private function removePicture(
+        Trick &$trick,
+        Picture $deletePicture,
+        ObjectManager $manager,
+        int $id,
+        ?array $videos = [],
+        ?array $pictures = []
+    ): ?RedirectResponse {
         if (unlink($deletePicture->getUploadRootDir('tricks') . '/'
             . $deletePicture->getName() . '.'
             . $deletePicture->getExt())) {
@@ -613,8 +624,14 @@ class TricksController extends AppController
         }
     }
 
-    private function removeHeadPicture(Trick &$trick, Picture $deletePicture, ObjectManager $manager, int $id, ?array $videos = [], ?array $pictures = []): ?RedirectResponse
-    {
+    private function removeHeadPicture(
+        Trick &$trick,
+        Picture $deletePicture,
+        ObjectManager $manager,
+        int $id,
+        ?array $videos = [],
+        ?array $pictures = []
+    ): ?RedirectResponse {
         $response = $this->removePicture($trick, $deletePicture, $manager, $id, $videos, $pictures);
 
         if (!is_null($response)) {

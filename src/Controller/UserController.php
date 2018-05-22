@@ -39,8 +39,13 @@ class UserController extends AppController
      */
     private $session;
 
-    public function __construct(Environment $twig, StatusService $statusService, UserService $userService, RegistryInterface $doctrine, SessionInterface $session)
-    {
+    public function __construct(
+        Environment $twig,
+        StatusService $statusService,
+        UserService $userService,
+        RegistryInterface $doctrine,
+        SessionInterface $session
+    ) {
         parent::__construct($twig, $statusService, $userService);
 
         $this->doctrine = $doctrine;
@@ -51,7 +56,7 @@ class UserController extends AppController
      * Vérifie si on vient de la page "enregistrement" qui laisse dans la Session la version de l'utilisateur qui vient
      * de créer un compte. Si ce n'est pas la cas, crée un nouvel utilisateur.
      * Récupère le formulaire de connexion @uses UserType et lui associe l'utilisateur ci-dessus.
-     * Attache le formulaire à la requête pour vérifier s'il a été validé et envoyé en POST. Puis valide s'il est valide.
+     * Attache le formulaire à la requête pour vérifier s'il a été validé et envoyé en POST.
      * Si c'est le cas,
      * @uses UserController::userVerif(). S'il y a une erreur ajoute l'erreur récupérée dans le formulaire. Puis,
      * @uses UserController::connectUser(), pour connecter l'utilisateur et le renvoyer vers l'accueil.

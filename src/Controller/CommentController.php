@@ -28,8 +28,12 @@ class CommentController extends AppController
      */
     private $doctrine;
 
-    public function __construct(Environment $twig, StatusService $statusService, UserService $userService, RegistryInterface $doctrine)
-    {
+    public function __construct(
+        Environment $twig,
+        StatusService $statusService,
+        UserService $userService,
+        RegistryInterface $doctrine
+    ) {
         parent::__construct($twig, $statusService, $userService);
 
         $this->doctrine = $doctrine;

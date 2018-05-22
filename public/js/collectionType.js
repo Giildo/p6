@@ -1,4 +1,4 @@
-$(function(){
+$(function () {
     var collectionHolderPic;
     var collectionHolderVid;
 
@@ -15,7 +15,7 @@ $(function(){
     collectionHolderPic.data('index', collectionHolderPic.find(':input').length);
     collectionHolderVid.data('index', collectionHolderPic.find(':input').length);
 
-    $('.add_picture').on('click', function(e) {
+    $('.add_picture').on('click', function (e) {
         // prevent the link from creating a "#" on the URL
         e.preventDefault();
 
@@ -24,7 +24,7 @@ $(function(){
     });
 
 
-    $('.add_video').on('click', function(e) {
+    $('.add_video').on('click', function (e) {
         // prevent the link from creating a "#" on the URL
         e.preventDefault();
 
@@ -32,32 +32,8 @@ $(function(){
         addTagForm(collectionHolderVid);
     });
 
-    function addTagForm(collectionHolderPic) {
-        // Get the data-prototype explained earlier
-        var prototype = collectionHolderPic.data('prototype');
-
-        // get the new index
-        var index = collectionHolderPic.data('index');
-
-        var newForm = prototype;
-        // You need this only if you didn't set 'label' => false in your tags field in TaskType
-        // Replace '__name__label__' in the prototype's HTML to
-        // instead be a number based on how many items we have
-        // newForm = newForm.replace(/__name__label__/g, index);
-
-        // Replace '__name__' in the prototype's HTML to
-        // instead be a number based on how many items we have
-        newForm = newForm.replace(/__name__/g, index);
-
-        // increase the index with one for the next item
-        collectionHolderPic.data('index', index + 1);
-
-        // Display the form in the page in an li, before the "Add a tag" link li
-        collectionHolderPic.append(newForm);
-    }
-
-
-    function addTagForm(collectionHolderVid) {
+    function addTagForm(collectionHolderVid)
+    {
         // Get the data-prototype explained earlier
         var prototype = collectionHolderVid.data('prototype');
 

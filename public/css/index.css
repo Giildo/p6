@@ -132,3 +132,17 @@ header figure .btn a i {
   border: none;
   cursor: pointer;
 }
+
+@media screen and (max-width: 576px) {
+  /* line 154, ../../sass/index.scss */
+  header figure h1 {
+    font-size: 2em;
+  }
+  /* line 158, ../../sass/index.scss */
+  header figure h1 .shift {
+    position: relative;
+    top: -15px;
+    left: 15px;
+    text-shadow: -15px 15px 15px #626262;
+  }
+}

@@ -1,5 +1,6 @@
 .idea/*
 .sass-cache/
+phpcs.xml
 
 ###> symfony/framework-bundle ###
 /public/bundles/

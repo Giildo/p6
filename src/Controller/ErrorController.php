@@ -30,7 +30,8 @@ class ErrorController extends AppController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            mail('giildo.jm@gmail.com',
+            mail(
+                'giildo.jm@gmail.com',
                 $message->getSubject(),
                 $message->getMessage()
             );
@@ -59,7 +60,8 @@ class ErrorController extends AppController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            mail('giildo.jm@gmail.com',
+            mail(
+                'giildo.jm@gmail.com',
                 $message->getSubject(),
                 $message->getMessage()
             );

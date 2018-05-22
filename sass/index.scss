@@ -145,3 +145,23 @@ header {
     }
   }
 }
+
+@media screen and (max-width: 576px) {
+  $shift: 15px;
+
+  header {
+    figure {
+      h1 {
+        font-size: 2em;
+
+
+        .shift {
+          position: relative;
+          top: -$shift;
+          left: $shift;
+          text-shadow: -$shift $shift 15px $shadowColor;
+        }
+      }
+    }
+  }
+}
