@@ -95,7 +95,7 @@ class CommentController extends AppController
     }
 
     /**
-     * @Route("/admin/commentaires/supprimer/{id}", name="admin_delete", requirements={"id"="\d+"})
+     * @Route("/admin/commentaires/supprimer/{idComment}", name="admin_delete", requirements={"idComment"="\d+"})
      * @param Request $request
      * @param int $idComment
      * @return RedirectResponse

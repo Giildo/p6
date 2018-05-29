@@ -67,7 +67,7 @@ class TricksController extends AppController
             $filtered = false;
             $tricks = null;
 
-            if (is_null($options) && is_null($category)) {
+            if (is_null($options) || is_null($category)) {
                 $tricks = $this->doctrine->getRepository(Trick::class)
                     ->findAll();
 
@@ -86,10 +86,10 @@ class TricksController extends AppController
                     $tricks = $trickRepository->findByCategory($options);
                     $category = 'Catégorie';
                 }
-            }
 
-            if (empty($tricks)) {
-                return $this->redirectToRoute('tricks_index');
+                if (empty($tricks)) {
+                    return $this->redirectToRoute('tricks_index');
+                }
             }
 
             /** @var Trick $trick */
@@ -121,7 +121,7 @@ class TricksController extends AppController
      * Si tout est OK, crée un formulaire de type @uses TrickType. Il attache le formulaire à la requête reçue par la
      * méthode, et si tout est OK modifie la figure en BDD et renvoie l'utilisateur vers la liste des figures.
      *
-     * @Route("/modifier/{id}", name="modify", requirements={"id"="\d+"})
+     * @Route("/modifier/{idTrick}", name="modify", requirements={"idTrick"="\d+"})
      * @param int $idTrick
      * @param Request $request
      * @return RedirectResponse|Response
@@ -304,7 +304,7 @@ class TricksController extends AppController
     }
 
     /**
-     * @Route("/supprimer/{id}", name="delete", requirements={"id"="\w+"})
+     * @Route("/supprimer/{idTricks}", name="delete", requirements={"idTricks"="\w+"})
      * @param int $idTricks
      * @param Request $request
      * @return RedirectResponse
@@ -353,10 +353,10 @@ class TricksController extends AppController
     }
 
     /**
-     * @Route("/{category}/{slug}/{id}/{action}",
+     * @Route("/{category}/{slug}/{idTrick}/{action}",
      *     name="show",
-     *     defaults={"action"=null, "id"=null},
-     *     requirements={"category"="\w+", "slug"="\w+", "id"="\d+", "action"="del"})
+     *     defaults={"action"=null, "idTrick"=null},
+     *     requirements={"category"="\w+", "slug"="[\w\-]+", "id"="\d+", "action"="del"})
      * @param Request $request
      * @param string $slug
      * @param string $category
@@ -476,7 +476,8 @@ class TricksController extends AppController
             $trick = new Trick();
 
             $form = $this->createForm(TrickType::class, $trick);
-            $form->remove('createdAt')
+            $form->remove('slug')
+	            ->remove('createdAt')
                 ->remove('updatedAt')
                 ->remove('user');
 
@@ -509,9 +510,9 @@ class TricksController extends AppController
             return $this->render('/tricks/add.html.twig', [
                 'form' => $form->createView()
             ]);
-        } else {
-            return $this->redirectToError(401);
         }
+
+        return $this->redirectToError(401);
     }
 
     /**

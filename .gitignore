@@ -9,5 +9,6 @@ phpcs.xml
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
+bin/phpunit
 /phpunit.xml
 ###< phpunit/phpunit ###

@@ -115,6 +115,7 @@ class Trick
         $slug = str_replace(['à', 'â'], 'a', $slug);
         $slug = str_replace('ô', 'o', $slug);
         $slug = str_replace(['ù', 'û', 'ü'], 'u', $slug);
+	    $slug = str_replace('°', '', $slug);
 
         $this->setSlug($slug);
 
