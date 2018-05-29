@@ -3,6 +3,7 @@
 ## Context
 
 Site communautaire pour l'apprentissage des figures de snowboard.  
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1deb4086364340e18cd94537e7554ed4)](https://app.codacy.com/app/Giildo/p6?utm_source=github.com&utm_medium=referral&utm_content=Giildo/p6&utm_campaign=badger)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/2145def8-c859-4a43-869a-900cd0e9aa64/big.png)](https://insight.sensiolabs.com/projects/2145def8-c859-4a43-869a-900cd0e9aa64)
 
 ## Installation
